@@ -1,0 +1,4 @@
+package.json merge=ours
+package-lock.json merge=ours
+README.md merge=ours
+text=auto
