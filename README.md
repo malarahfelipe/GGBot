@@ -1,2 +1,2 @@
 # GoodBot
-Hacking bot using ML for pixel recogniztion with use of OpenCV
+Hacking bot using ML for pixel recognition with the use of OpenCV
