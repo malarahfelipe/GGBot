@@ -1,6 +1,16 @@
+import { tmpdir } from "os"
+
+export interface BarInfo {
+  filledColor: string,
+  emptyColor: string,
+  startsAt: {
+    x: number,
+    y: number
+  }
+}
 export abstract class Utils {
 
-  public static getHealthInfo() {
+  public static getHealthInfo(): BarInfo {
     return {
       filledColor: 'c04040',
       emptyColor: '623234',
@@ -10,7 +20,7 @@ export abstract class Utils {
       }
     }
   }
-  public static getManaInfo() {
+  public static getManaInfo(): BarInfo {
     return  {
       filledColor: '7471ff',
       emptyColor: '623234',
@@ -37,4 +47,15 @@ export abstract class Utils {
       hotkeyPixelsDistance: 36
     }
   }
+  public static getAlphabet() {
+    return ["A", "B", "C", "D", "E", "F",
+    //  "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
+    ]
+  }
 }
+export interface Position {
+  x: number,
+  y: number
+}
+
+export const imgDir = `${tmpdir()}\\GoodBot`

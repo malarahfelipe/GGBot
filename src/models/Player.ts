@@ -1,8 +1,11 @@
-import { StackKey } from "./Key"
+import { keyTap } from "robotjs"
+import { StackKey, SupportKey } from "./Key"
+import { PlayerScreen } from "./PlayerScreen"
 
 export class Player {
 
   private _stackKeys!: StackKey[]
+  private _supportKeys!: SupportKey[]
   constructor(
     private hp: number,
     private mana: number
@@ -21,6 +24,28 @@ export class Player {
         min: 100
       },
     ]
+    this.supportKeys = [
+      {
+        check: () => PlayerScreen.isHealthBelow(80),
+        action: () => keyTap('f1'),
+        every: 150
+      },
+      {
+        check: () => PlayerScreen.isManaBelow(60),
+        action: () => keyTap('f3'),
+        every: 200
+      }
+    ]
+  }
+
+  set supportKeys(supKeys: SupportKey[]) {
+    this._supportKeys = supKeys
+    this._supportKeys.forEach(({ check, action, every }) =>
+      setInterval(() => {
+        if (check())
+          action()
+      }, every)
+    )
   }
 
   get stackKeys() {
