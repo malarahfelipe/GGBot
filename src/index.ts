@@ -2,11 +2,11 @@ import { Cavebot } from "./models/Cavebot"
 
 
 export const initialize = async() => {
-  setTimeout(async() => {
+  setInterval(async() => {
     console.log('starting cavebot')
     const cavebot = Cavebot.getInstance()
     return cavebot.goToNextStep()
-  }, 2000)
+  }, 3000)
 }
 initialize()
 /*

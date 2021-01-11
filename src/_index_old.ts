@@ -58,7 +58,6 @@ const miniMapWps = [
   'A', 'B', 'C', 'D', 'E', 'F'
 ]
 const wpStepsBuffers = []
-const miniMapImage = getMiniMapImage()
 let currentStep = -1
 
 const getPositionFromKey = (key = 'f1') =>
@@ -79,12 +78,11 @@ const isKeyStackEmpty = (key = 'f1') =>
   getPixelColorFromPosition(
     getPositionFromKey(key)
   ) === stack.emptyColor
-const writeImage = async(data = Buffer.from(0), fileName = '', width = 0, height = 0) =>
+const writeImage = async(data = Buffer.from(''), fileName = '', width = 0, height = 0) =>
   new Promise((resolve, reject) =>
     new Jimp({ data, width, height }, (err, image) => {
       if (err) return reject(err)
       image.write(fileName)
-      resolve()
     })
   )
 const readImage = async(fileName) =>
@@ -117,36 +115,8 @@ const getMiniMapWpsBuffer = async () =>
     )
   )
 
-const getMiniMapImage = () =>
-  robot.screen.capture(1199, 28, 1304 - 1199, 136 - 28).image
-
-const getStepPosition = async(step) =>
-  new Promise((resolve, reject) =>
-    imageSearch(miniMapImage, step, (error, results) => {
-      if (error) return reject(error)
-      else return resolve((results || []).pop())
-    })
-  )
-const goToNextStep = async () => {
-  currentStep++
-  const step = wpStepsBuffers[currentStep]
-  const { x, y } = await getStepPosition(step)
-  robot.moveMouse(x, y)
-  robot.mouseClick()
-}
-
 const initialize = async() => {
-  wpStepsBuffers.splice(0, miniMapWps.length, await getMiniMapWpsBuffer())
   setInterval(async () =>
-    goToNextStep()
-  , 1000)
-}
-initialize()
-/*
-
-
-  setInterval(async () =>
-    goToNextStep()
     await Promise.all(
       stackKeys.map(async keyStack => {
         const currentKeyAmount = await getKeyStackAmount(keyStack.key)
@@ -156,6 +126,11 @@ initialize()
       })
     )
   , 1000)
+}
+initialize()
+/*
+
+
 setTimeout(() => {
   // Get mouse position.
   const mouse = robot.getMousePos();

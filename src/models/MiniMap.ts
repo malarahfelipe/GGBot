@@ -1,9 +1,33 @@
-import { getPixelColor, mouseClick, moveMouse, screen } from 'robotjs'
+import { Bitmap, getPixelColor, mouseClick, moveMouse, screen } from 'robotjs'
 import { Position, Utils } from './Utils'
 import { parseFile } from 'pngparse'
 import { readFileSync } from 'fs'
-import fastTemplateSearch from 'fast-template-matcher'
-import { getImageBase64, readBitmapData, readTextInImage, writeImage } from './Image'
+import cv from 'opencv4nodejs'
+import { getImageBase64, readBitmapData, readTextInImage, screenCaptureToFile2, writeImage } from './Image'
+
+const find = async (templatePath = '', subImagePath = '') => {
+  // Load images
+  console.log('templatePath', templatePath)
+  console.log('subImagePath', subImagePath)
+  const originalMat = await cv.imreadAsync(templatePath, 1);
+  const waldoMat = await cv.imreadAsync(subImagePath, 1);
+
+  // Match template (the brightest locations indicate the highest match)
+  const matched = originalMat.matchTemplate(waldoMat, 5);
+  console.log('matched', matched)
+  // Use minMaxLoc to locate the highest value (or lower, depending of the type of matching method)
+  /* const minMax = matched.minMaxLoc();
+  const { maxLoc: { x, y } } = minMax;
+
+  // Draw bounding rectangle
+  originalMat.drawRectangle(
+    new cv.Rect(x, y, waldoMat.cols, waldoMat.rows),
+    new cv.Vec3(0, 255, 0),
+    2,
+    cv.LINE_8
+  ); */
+  return matched.minMaxLoc().maxLoc
+};
 
 export class MiniMap {
 
@@ -24,16 +48,15 @@ export class MiniMap {
 
   static readonly WP_IMAGE_SIZE: number = 7
 
-  static getMiniMapImage() {
-    const { startsAt: { x, y }, width: mapWidth, height: mapHeight } = this.getInfo()
-    const { width, height, image: data } = screen.capture(x, y, mapWidth, mapHeight)
+  static getMiniMapImage(): Bitmap {
+    const { startsAt: { x: mapX, y: mapY }, width: mapWidth, height: mapHeight } = this.getInfo()
+    return screen.capture(mapX, mapY, mapWidth, mapHeight)
     /*
     console.log('typeof data', typeof data)
     console.log('isBuffer', Buffer.isBuffer(data))
     console.log('isView', ArrayBuffer.isView(data))
     console.log('bites', data.constructor.BYTES_PER_ELEMENT)
     */
-    return { width, height, data }
   }
 
   private async getAlphabetWpsBuffer() {
@@ -77,22 +100,19 @@ export class MiniMap {
     ).filter(i => !!i)
   }
   async goTo(position: number = 0) {
-    const wpPosition = this.wpPositionsBuffer[position]
-    if (!wpPosition) return
-
-    const positions = MiniMap.getWpPositions()
-    console.log('positions', positions)
-    const { data, width, height} = MiniMap.getMiniMapImage()
-    await writeImage(data, 'miniMap.png', width, height)
-    const result = fastTemplateSearch({
-      source: `${__dirname}\\${Utils.getAlphabet()[position]}.png`,
-      template: 'miniMap.png',
-      matchPercent: 70,
-      maximumMatches: 1,
-      downPyramids: 1,
-      searchExpansion: 15
-    })
-    console.log('result', result)
+    console.log('position')
+    const { startsAt: { x: miniMapX, y: miniMapY } } = MiniMap.getInfo()
+    const { image, width, height } = MiniMap.getMiniMapImage()
+    await screenCaptureToFile2(MiniMap.getMiniMapImage(), `${__dirname}\\miniMap2.png`)
+    await writeImage(image, `${__dirname}\\miniMap.png`, width, height)
+    const { x, y } = await find(
+      `${__dirname}\\miniMap2.png`,
+      `${__dirname}\\${Utils.getAlphabet()[position]}.png`,
+    )
+    console.log('mouseMove', { x: miniMapX+x, y: miniMapY+y })
+    moveMouse(miniMapX+x, miniMapY+y)
+    //mouseClick()
+    console.log('result', { x, y })
 /*
 
 
