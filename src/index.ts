@@ -1,11 +1,12 @@
-import { Cavebot } from "./models/Cavebot"
-
+import { Hub } from "./models/Hub"
+import { app, BrowserWindow } from 'deskgap'
 
 export const initialize = async() => {
-  setInterval(async() => {
-    console.log('starting cavebot')
-    const cavebot = Cavebot.getInstance()
-    return cavebot.goToNextStep()
+  setTimeout(async() => {
+    console.log('starting hub')
+    const hub = await Hub.getInstance()
+    const win = new BrowserWindow();
+    win.loadFile('index.html');
   }, 3000)
 }
 initialize()
