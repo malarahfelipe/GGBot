@@ -1,25 +1,26 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es6",
-    "noImplicitAny": false,
+    "strict": true,
+    "target": "es2017",
+    "module": "esnext",
     "moduleResolution": "node",
-    "allowJs": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "noUnusedLocals": true,
     "sourceMap": true,
-    "removeComments": true,
-    "outDir": "dist",
-    "resolveJsonModule": true,
-    "rootDir": "./src",
+    "jsx": "react",
+    "jsxFactory": "h",
+    "allowJs": false,
+    "strictNullChecks": false,
     "baseUrl": ".",
-    "lib": [
-      "esnext",
-      "es2020"
-    ]
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
   },
-  "include": [
-    "src/**/*"
+  "exclude": [
+    "src/sw/**/*",
+    "src/codecs/processor-worker/**/*"
   ]
 }

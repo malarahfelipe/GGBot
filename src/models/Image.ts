@@ -1,7 +1,6 @@
-import { rejects } from "assert"
-import Jimp from "jimp"
-import { recognize } from "node-tesseract-ocr"
+import * as Jimp from "jimp"
 import { Bitmap } from "robotjs"
+const { recognize } = require("node-tesseract-ocr")
 
 export const getJimpImage = async(data = Buffer.from(''), width = 0, height = 0) =>
   new Promise<Jimp>((resolve, reject) =>
@@ -44,7 +43,7 @@ export const screenCaptureToFile2 = async (robotScreenPic: Bitmap, path: string 
     try {
       const image = new Jimp(robotScreenPic.width, robotScreenPic.height);
       let pos = 0;
-      image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y, idx) => {
+      image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x: number, y: number, idx: number) => {
         image.bitmap.data[idx + 2] = robotScreenPic.image.readUInt8(pos++);
         image.bitmap.data[idx + 1] = robotScreenPic.image.readUInt8(pos++);
         image.bitmap.data[idx + 0] = robotScreenPic.image.readUInt8(pos++);

@@ -1,17 +1,19 @@
-import { Hub } from "./models/Hub"
-import { app, BrowserWindow } from 'deskgap'
+declare module '@webcomponents/custom-elements';
 
-export const initialize = async() => {
-  setTimeout(async() => {
-    console.log('starting hub')
-    const hub = await Hub.getInstance()
-    const win = new BrowserWindow();
-    win.loadFile('index.html');
-  }, 3000)
+function init() {
+  require('./init-app.tsx');
 }
-initialize()
-/*
 
+if (!('customElements' in self)) {
+  import(
+    /* webpackChunkName: "wc-polyfill" */
+    '@webcomponents/custom-elements'
+  ).then(init);
+} else {
+  init();
+}
+
+/*
 
   setInterval(async () =>
     goToNextStep()

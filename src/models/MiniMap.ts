@@ -1,6 +1,6 @@
-import { Bitmap, mouseClick, moveMouse, screen } from 'robotjs'
+import * as robot from 'robotjs'
 import { imgDir, Utils } from './Utils'
-import { getImageBase64, readBitmapData, readTextInImage, screenCaptureToFile2, writeImage } from './Image'
+import { screenCaptureToFile2 } from './Image'
 import { find } from './Screen'
 import { assets } from '../assets'
 
@@ -21,9 +21,9 @@ export class MiniMap {
 
   static readonly WP_IMAGE_SIZE: number = 7
 
-  static getMiniMapImage(): Bitmap {
+  static getMiniMapImage(): robot.Bitmap {
     const { startsAt: { x: mapX, y: mapY }, width: mapWidth, height: mapHeight } = this.getInfo()
-    return screen.capture(mapX, mapY, mapWidth, mapHeight)
+    return robot.screen.capture(mapX, mapY, mapWidth, mapHeight)
   }
 
 
@@ -45,8 +45,8 @@ export class MiniMap {
       `${imgDir}\\miniMap.png`,
       assets(`${Utils.getAlphabet()[position]}.png`)
     )
-    moveMouse(miniMapX+x, miniMapY+y)
-    mouseClick()
+    robot.moveMouse(miniMapX+x, miniMapY+y)
+    robot.mouseClick()
   }
 
 }

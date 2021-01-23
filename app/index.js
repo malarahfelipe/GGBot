@@ -1,4 +1,5 @@
 console.log('h0')
+require('robotjs');
 const { app, BrowserWindow, dialog, messageNode, systemPreferences, MenuItem, shell } = require('deskgap');
 const fs = require('fs');
 
@@ -47,7 +48,8 @@ app.once('ready', () => {
         menu: null,
         show: false,
         width: 600,
-        height: 370
+        height: 370,
+        webPreferences: { nodeIntegration: true }
     }).once('ready-to-show', function() {
         console.log('h3')
         this.show();

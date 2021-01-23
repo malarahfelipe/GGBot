@@ -1,4 +1,4 @@
-import { getPixelColor, screen } from 'robotjs'
+import * as robot from 'robotjs'
 import { readTextInImage, writeImage } from './Image'
 import { imgDir, Position, Utils } from "./Utils"
 
@@ -13,6 +13,12 @@ export interface StackKey {
   key: Key,
   min: number
 }
+const f1 = {
+  startsAt: {
+    x: 85,
+    y: 581
+  }
+}
 export abstract class KeyScreen {
   static getPositionFromKey(key: Key = 'f1') {
     return {
@@ -25,7 +31,7 @@ export abstract class KeyScreen {
     const { x } = this.getPositionFromKey(key)
     const width = Utils.getHotkeyInfo().hotkeyPixelsWidth
     const height = 8
-    const { image } = screen.capture(x, 604, width, height)
+    const { image } = robot.screen.capture(x, 604, width, height)
     const fileName = `${imgDir}\\${key}.png`
     console.log('fileName', `${imgDir}\\${key}.png`)
     return writeImage(image, fileName, width, height)
@@ -38,7 +44,7 @@ export abstract class KeyScreen {
 
 
   static getPixelColorFromPosition ({ x, y }: Position) {
-    return getPixelColor(x, y)
+    return robot.getPixelColor(x, y)
   }
 
   static isKeyStackEmpty(key: Key = 'f1') {

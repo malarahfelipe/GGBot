@@ -1,18 +1,16 @@
-import { getPixelColor } from 'robotjs'
-import { BarInfo, Utils } from './Utils';
+import * as robot from 'robotjs'
+import { BarInfo, Position, Utils } from './Utils';
 
-export abstract class PlayerScreen {
+export  class PlayerScreen {
 
   private static getCurrentColor(x: number = 0, y: number = 0) {
-    return getPixelColor(x, y)
+    return robot.getPixelColor(x, y)
   }
 
   private static isBelow(percentage: number = 0, info: BarInfo) {
     const { filledColor, startsAt: { x, y }} = info
     const currentColor = this.getCurrentColor(x + percentage, y)
     return filledColor !== currentColor
-    // Press f1.
-      robot.keyTap("f1")
   }
 
   public static isHealthBelow(percentage: number = 0) {
@@ -21,5 +19,21 @@ export abstract class PlayerScreen {
 
   public static isManaBelow(percentage: number = 0) {
     return this.isBelow(percentage, Utils.getManaInfo())
+  }
+
+  private static instance: PlayerScreen
+  private position: Position
+  private constructor() {
+                    //TODO: remove hardcoded position
+    this.position = { x: 625, y: 295 }
+  }
+  public static getInstance(): PlayerScreen {
+    if (!this.instance)
+      this.instance = new PlayerScreen()
+    return this.instance
+  }
+
+  public getPosition() {
+    return this.position
   }
 }

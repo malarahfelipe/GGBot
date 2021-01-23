@@ -1,16 +1,14 @@
 const fs = require('fs')
 const path = require('path')
 const webpack = require('webpack')
-const CleanPlugin = require('clean-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const ProgressBarPlugin = require('progress-bar-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const HtmlPlugin = require('html-webpack-plugin')
-const ScriptExtHtmlPlugin = require('script-ext-html-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const WatchTimestampsPlugin = require('./config/watch-timestamps-plugin')
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const WorkerPlugin = require('worker-plugin')
 const AutoSWPlugin = require('./config/auto-sw-plugin')
 const CrittersPlugin = require('critters-webpack-plugin')
@@ -39,9 +37,7 @@ module.exports = async function (_, env) {
 
   return {
     mode: isProd ? 'production' : 'development',
-    entry: {
-      'first-interaction': './src/index.ts'
-    },
+    entry: './src/index',
     devtool: isProd ? 'source-map' : 'inline-source-map',
     stats: 'minimal',
     output: {
@@ -52,9 +48,21 @@ module.exports = async function (_, env) {
       globalObject: 'self'
     },
     resolve: {
-      extensions: ['.ts', '.tsx', '.mjs', '.js', '.scss', '.css'],
+      extensions: ['.wasm', '.json', '.ts', '.tsx', '.mjs', '.js', '.scss', '.css'],
+      fallback: {
+        "path": require.resolve("path-browserify"),
+        "util": require.resolve("util"),
+        "fs": require.resolve("fs"),
+        "os": require.resolve("os-browserify/browser"),
+        "assert": require.resolve("assert"),
+        "http": require.resolve("stream-http"),
+        "https": require.resolve("https-browserify"),
+        "stream": require.resolve("stream-browserify"),
+        "zlib": require.resolve("browserify-zlib")
+      },
       alias: {
-        style: path.join(__dirname, 'src/style')
+        style: path.join(__dirname, 'src/style'),
+        "@": path.join(__dirname, 'src'),
       }
     },
     resolveLoader: {
@@ -68,8 +76,12 @@ module.exports = async function (_, env) {
       defaultRules: [],
       rules: [
         {
+          test: /\.json$/,
+          loader: 'json-loader'
+        },
+        {
           test: /\.node$/,
-          loader: 'node-loader',
+          loader: "native-ext-loader"
         },
         {
           oneOf: [
@@ -122,15 +134,16 @@ module.exports = async function (_, env) {
             {
               loader: 'css-loader',
               options: {
-                modules: true,
-                localIdentName: isProd ? '[hash:base64:5]' : '[local]__[hash:base64:5]',
-                namedExport: true,
-                camelCase: true,
+                modules: {
+                  localIdentName: isProd ? '[hash:base64:5]' : '[local]__[hash:base64:5]',
+                  namedExport: true,
+                  exportLocalsConvention: "camelCaseOnly"
+                },
                 importLoaders: 1,
                 sourceMap: isProd,
-                sass: true
               }
-            }
+            },
+            'postcss-loader'
           ]
         },
         {
@@ -145,7 +158,8 @@ module.exports = async function (_, env) {
                 importLoaders: 1,
                 sourceMap: isProd
               }
-            }
+            },
+            'postcss-loader'
           ]
         },
         {
@@ -191,14 +205,15 @@ module.exports = async function (_, env) {
       }),
 
       // Remove old files before outputting a production build:
-      isProd && new CleanPlugin([
-        'assets',
-        '**/*.{css,js,json,html,map}'
-      ], {
-        root: outputPath,
-        verbose: false,
-        beforeEmit: true
-      }),
+      // TODO: verify that
+      // isProd && new CleanWebpackPlugin([
+      //   'assets',
+      //   '**/*.{css,js,json,html,map}'
+      // ], {
+      //   root: outputPath,
+      //   verbose: false,
+      //   beforeEmit: true
+      // }),
 
       new WorkerPlugin(),
 
@@ -216,16 +231,6 @@ module.exports = async function (_, env) {
         chunkFilename: '[name].[contenthash:5].css'
       }),
 
-      new OptimizeCssAssetsPlugin({
-        cssProcessorOptions: {
-          postcssReduceIdents: {
-            counterStyle: false,
-            gridTemplate: false,
-            keyframes: false
-          }
-        }
-      }),
-
       // These plugins fix infinite loop in typings-for-css-modules-loader.
       // See: https://github.com/Jimdo/typings-for-css-modules-loader/issues/35
       new webpack.WatchIgnorePlugin(
@@ -235,7 +240,7 @@ module.exports = async function (_, env) {
         { paths: [ `${path.join(`${__dirname}`, 'src')}/**/*.d.ts` ], patterns: /(c|sc|sa)ss\.d\.ts$/ }
       ),
 
-      // For now we're not doing SSR.
+      // TODO:For now we're not doing SSR.
       new HtmlPlugin({
         filename: path.join(outputPath, 'index.html'),
         template: false && isProd ? '!!prerender-loader?string!src/index.html' : 'src/index.html',
@@ -262,10 +267,6 @@ module.exports = async function (_, env) {
         filename: '_redirects',
       }),
 
-      new ScriptExtHtmlPlugin({
-        inline: ['first']
-      }),
-
       // Inline constants during build, so they can be folded by UglifyJS.
       new webpack.DefinePlugin({
         VERSION: JSON.stringify(VERSION),
@@ -275,9 +276,9 @@ module.exports = async function (_, env) {
       }),
 
       // Copying files via Webpack allows them to be served dynamically by `webpack serve`
-      new CopyPlugin([
-        { patterns: [{ from: 'src/assets', to: 'assets' }] }
-      ]),
+      new CopyPlugin({
+        patterns: [{ from: 'src/assets', to: 'assets' }]
+      }),
 
       // For production builds, output module size analysis to build/report.html
       isProd && new BundleAnalyzerPlugin({
@@ -286,21 +287,21 @@ module.exports = async function (_, env) {
         openAnalyzer: false
       }),
 
-      // Inline Critical CSS (for the intro screen, essentially)
-      isProd && new CrittersPlugin({
-        // use <link rel="stylesheet" media="not x" onload="this.media='all'"> hack to load async css:
-        preload: 'media',
-        // inline all styles from any stylesheet below this size:
-        inlineThreshold: 2000,
-        // don't bother lazy-loading non-critical stylesheets below this size, just inline the non-critical styles too:
-        minimumExternalSize: 4000,
-        // don't emit <noscript> external stylesheet links since the app fundamentally requires JS anyway:
-        noscriptFallback: false,
-        // inline the tiny data URL fonts we have for the intro screen:
-        inlineFonts: true,
-        // (and don't lazy load them):
-        preloadFonts: false
-      })
+      // // Inline Critical CSS (for the intro screen, essentially)
+      // isProd && new CrittersPlugin({
+      //   // use <link rel="stylesheet" media="not x" onload="this.media='all'"> hack to load async css:
+      //   preload: 'media',
+      //   // inline all styles from any stylesheet below this size:
+      //   inlineThreshold: 2000,
+      //   // don't bother lazy-loading non-critical stylesheets below this size, just inline the non-critical styles too:
+      //   minimumExternalSize: 4000,
+      //   // don't emit <noscript> external stylesheet links since the app fundamentally requires JS anyway:
+      //   noscriptFallback: false,
+      //   // inline the tiny data URL fonts we have for the intro screen:
+      //   inlineFonts: true,
+      //   // (and don't lazy load them):
+      //   preloadFonts: false
+      // })
     ].filter(Boolean), // Filter out any falsey plugin array entries.
 
     optimization: {
@@ -326,7 +327,6 @@ module.exports = async function (_, env) {
     // Turn off various NodeJS environment polyfills Webpack adds to bundles.
     // They're supposed to be added only when used, but the heuristic is loose
     // (eg: existence of a variable called setImmedaite in any scope)
-    /*
     node: {
       // Keep global, it's just an alias of window and used by many third party modules:
       global: true,
@@ -341,8 +341,8 @@ module.exports = async function (_, env) {
       Buffer: false,
       // Never embed a setImmediate implementation:
       setImmediate: false
+      */
     },
-    */
     devServer: {
       // Any unmatched request paths will serve static files from src/*:
       contentBase: path.join(__dirname, 'src'),
@@ -356,22 +356,6 @@ module.exports = async function (_, env) {
       // Don't embed an error overlay ("redbox") into the client bundle:
       overlay: false
     },
-    resolve: {
-      extensions: [".wasm", ".mjs", ".js", ".jsx", ".ts", ".tsx", ".json"],
-      alias: {
-        "@": path.join(__dirname, 'src'),
-      },
-      fallback: {
-        "deskgap": require.resolve('deskgap'),
-        "path": require.resolve("path-browserify"),
-        "util": require.resolve("util"),
-        "os": require.resolve("os-browserify/browser"),
-        "assert": require.resolve("assert"),
-        "http": require.resolve("stream-http"),
-        "https": require.resolve("https-browserify"),
-        "stream": require.resolve("stream-browserify"),
-        "zlib": require.resolve("browserify-zlib")
-      }
-    }
+    target: 'node'
   }
 }

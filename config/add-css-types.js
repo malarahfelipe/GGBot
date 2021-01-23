@@ -1,4 +1,4 @@
-const DtsCreator = require('typed-css-modules');
+const DtsCreator = require('typed-css-modules').default;
 const chokidar = require('chokidar');
 const util = require('util');
 const sass = require('node-sass');

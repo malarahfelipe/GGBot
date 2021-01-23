@@ -11,10 +11,10 @@ import { imgDir } from "./Utils"
 export class Hub {
   static instance: Hub
 
-  private logger: Logger
-  private cavebot: Cavebot
-  private miniMap: MiniMap
-  private healer: Healer
+  logger: Logger
+  cavebot: Cavebot
+  miniMap: MiniMap
+  healer: Healer
 
   private constructor() { }
 

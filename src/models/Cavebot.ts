@@ -1,7 +1,5 @@
 import { MiniMap } from "./MiniMap"
 import { Utils } from "./Utils"
-const imageSearch = require('matches-subimage/src')
-
 export class Cavebot {
 
   private currentStep: string = null
@@ -20,7 +18,7 @@ export class Cavebot {
     const nextIndex = currentPosition !== -1 && (currentPosition + 1) < alphabet.length ? currentPosition + 1 : 0
     this.currentStep = alphabet[nextIndex]
     console.log('this.currentStep', this.currentStep)
-    return (await MiniMap.getInstance()).goTo(nextIndex)
+    return MiniMap.getInstance().goTo(nextIndex)
     /*
     TODO: 01/10 16h
     const { x, y } =

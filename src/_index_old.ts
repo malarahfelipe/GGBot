@@ -1,4 +1,4 @@
-const robot = require("robotjs")
+/*const robot = require("robotjs")
 const pngParse = require('pngparse')
 const Jimp = require('jimp')
 const imageSearch = require('matches-subimage/src')
@@ -65,13 +65,10 @@ const getPositionFromKey = (key = 'f1') =>
     y: f1.startsAt.y,
     x: f1.startsAt.x + ( ( Number(key.split('f').pop()) - 1 ) * hotkeyPixelsDistance )
   })
-/**
- *
 type Position = {
   x: number,
   y: number
 }
-*/
 const getPixelColorFromPosition = ({ x, y }) =>
   robot.getPixelColor(x, y)
 const isKeyStackEmpty = (key = 'f1') =>
@@ -127,7 +124,7 @@ const initialize = async() => {
     )
   , 1000)
 }
-initialize()
+//initialize()
 /*
 
 

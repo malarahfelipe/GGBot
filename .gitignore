@@ -21,3 +21,9 @@ yarn-error.log*
 *.sln
 *.sw?
 .tmp
+/app/build
+/release
+/*.log
+*.scss.d.ts
+*.css.d.ts
+*.o

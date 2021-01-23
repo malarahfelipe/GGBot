@@ -108,7 +108,7 @@ module.exports = class AutoSWPlugin {
         return true;
       });
     }
-    await Promise.all(serviceWorkers.map(
+    await Promise.all((serviceWorkers || []).map(
       (serviceWorker, index) => this.compileServiceWorker(compiler, compilation, serviceWorker, index, assetMapping)
     ));
   }

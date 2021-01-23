@@ -7,8 +7,8 @@ export class Player {
   private _stackKeys!: StackKey[]
   private _supportKeys!: SupportKey[]
   constructor(
-    private hp: number,
-    private mana: number
+    protected hp: number,
+    protected mana: number
   ) {
     this._stackKeys = [
       {
