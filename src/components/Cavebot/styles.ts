@@ -14,17 +14,14 @@ export const Container = styled.div`
     padding: 25px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
 `
 
 export const ImageWP = styled.img`
-    width: 50px;
+  max-width: 25px;
+  min-width: 25px;
 `
 export const Text = styled.p`
-    margin-top: 35px;
-    font-size: 20px;
-    font-weight: bold;
+  font-weight: bold;
 `
 
 export const Title = styled(Text)`

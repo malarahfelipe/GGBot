@@ -25,6 +25,13 @@
     "@typescript-eslint"
   ],
   "rules": {
+    "indent": ["error", 2],
+    "array-bracket-spacing": ["error", "always"],
+    "template-curly-spacing": ["error", "always"],
+    "max-len": ["error", {
+      "code": 200
+    }],
+    "max-lines-per-function": ["error", 150],
     "@typescript-eslint/no-var-requires": "off",
     "no-empty-function": "off",
     "@typescript-eslint/no-empty-function": ["error", { "allow": ["constructors"] }],
