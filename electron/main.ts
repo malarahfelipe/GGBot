@@ -2,10 +2,11 @@ import { app, BrowserWindow } from 'electron'
 import * as path from 'path'
 import * as url from 'url'
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
+import { startListeners } from './listeners'
 
 let mainWindow: Electron.BrowserWindow | null
 
-function createWindow () {
+function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1100,
     height: 700,
@@ -44,4 +45,16 @@ app.on('ready', createWindow)
         .catch((err) => console.log('An error occurred: ', err))
     }
   })
+  .then(startListeners)
+
 app.allowRendererProcessReuse = true
+/*
+if (process.env.NODE_ENV === 'development') {
+  require('electron-watch')(
+    __dirname,
+    'start:electron',             // npm scripts, means: npm run dev:electron-main
+    path.join(__dirname, './'),      // cwd
+    2000,                            // debounce delay
+  );
+}
+*/

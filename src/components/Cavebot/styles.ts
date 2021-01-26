@@ -18,13 +18,15 @@ export const Container = styled.div`
     justify-content: center;
 `
 
-export const Image = styled.img`
-    width: 300px;
-    animation: ${rotate} 15s linear infinite;
-    opacity: 0.1;
+export const ImageWP = styled.img`
+    width: 50px;
 `
 export const Text = styled.p`
     margin-top: 35px;
     font-size: 20px;
     font-weight: bold;
+`
+
+export const Title = styled(Text)`
+  @apply border-b-2 border-white;
 `
