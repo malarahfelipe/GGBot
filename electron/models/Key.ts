@@ -15,12 +15,7 @@ export interface StackKey {
 }
 export abstract class KeyScreen {
   static getPositionFromKey(key: Key = 'f1'): Position {
-    const f1 = {
-      startsAt: {
-        x: 1,
-        y: 2
-      }
-    }
+    const { f1 } = Utils.getHotkeyInfo()
     return {
       y: f1.startsAt.y,
       x: f1.startsAt.x + ((Number(key.split('f').pop()) - 1) * Utils.getHotkeyInfo().hotkeyPixelsDistance)
@@ -32,8 +27,8 @@ export abstract class KeyScreen {
     const width = Utils.getHotkeyInfo().hotkeyPixelsWidth
     const height = 8
     const { image } = screen.capture(x, 604, width, height)
-    const fileName = `${imgDir}\\${key}.png`
-    console.log('fileName', `${imgDir}\\${key}.png`)
+    const fileName = `${ imgDir }\\${ key }.png`
+    console.log('fileName', `${ imgDir }\\${ key }.png`)
     return writeImage(image, fileName, width, height)
       .then(async () => {
         const rawAmount = await readTextInImage(fileName)

@@ -51,9 +51,17 @@ export abstract class Utils {
   }
 
   public static getAlphabet(): Alpha[] {
-    return ['A', 'B', 'C', 'D', 'E', 'F'
+    return [ 'A', 'B', 'C', 'D', 'E', 'F'
     //  "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
     ]
+  }
+
+  public static nextAlpha(alpha: Alpha): Alpha {
+    if (!alpha) return 'A'
+    else {
+      const alphabet = this.getAlphabet()
+      return alphabet[alphabet.indexOf(alpha) + 1] ?? 'A'
+    }
   }
 }
 export interface Position {

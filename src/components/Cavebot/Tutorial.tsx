@@ -10,15 +10,15 @@ export interface ITutorialCavebot {
 }
 
 export const TutorialCavebot: React.FC<ITutorialCavebot> = ({ tutorial, setTutorial }) =>
-  <>
+  <div className="border rounded border-white">
     <div
       className={
         `bg-gray-200 rounded p-0.5 m-1 cursor-pointer text-gray-600 hover:text-white hover:${ tutorial === -1 ? 'bg-gray-800' : 'bg-red-800' } transform transition ease-out hover:-translate-y-1`
       }
+      onClick={() => setTutorial(tutorial === -1 ? 0 : -1) }
     >
       <div
         className="flex rounded border border-black p-2 m-1 cursor-pointer text-center"
-        onClick={() => setTutorial(tutorial === -1 ? 0 : -1) }
       >
         <label className="mx-auto inline-flex items-center cursor-pointer">
           {
@@ -46,56 +46,59 @@ export const TutorialCavebot: React.FC<ITutorialCavebot> = ({ tutorial, setTutor
         </label>
       </div>
     </div>
-    <TransitOpacity
-      show={tutorial !== -1}
-      className="flex flex-col space-y-4 text-center text-white p-2 border border-white rounded"
-    >
+    {
+      tutorial !== -1 &&
       <TransitOpacity
-        show={tutorial === 0}
-        className="flex flex-col space-y-2"
+        show={tutorial !== -1}
+        className="flex flex-col space-y-4 text-center text-white p-2 border border-white rounded"
       >
-        <p className="text-normal">Primeiramente, você ira marcar os seguintes pontos no mapa: </p>
-        <Row className="space-x-3 mx-auto">
-          {
-            Utils.getAlphabet()
-              .map((alpha, index) =>
-                <ImageWP
-                  key={index}
-                  // eslint-disable-next-line @typescript-eslint/no-var-requires
-                  src={require(`../../assets/${ alpha }.png`).default}
-                  alt={`Wp-${ index }`}
-                />
-              )
-          }
+        <TransitOpacity
+          show={tutorial === 0}
+          className="flex flex-col space-y-2"
+        >
+          <p className="text-normal">Primeiramente, você ira marcar os seguintes pontos no mapa: </p>
+          <Row className="space-x-3 mx-auto">
+            {
+              Utils.getAlphabet()
+                .map((alpha, index) =>
+                  <ImageWP
+                    key={index}
+                    // eslint-disable-next-line @typescript-eslint/no-var-requires
+                    src={require(`../../assets/${ alpha }.png`).default}
+                    alt={`Wp-${ index }`}
+                  />
+                )
+            }
+          </Row>
+          <p className="text-sm italic text-gray-300"> ( não precisa ser em sequência )</p>
+        </TransitOpacity>
+        <Row className="justify-between">
+          <TransitOpacity
+            show={tutorial !== 0}
+          >
+            {
+              tutorial !== 0 &&
+              <svg
+                onClick={() => setTutorial(tutorial - 1)}
+                className="w-6 h-6 cursor-pointer transform delay-150 transition hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+            }
+          </TransitOpacity>
+          <TransitOpacity
+            show={tutorial < 5}
+          >
+            {
+              tutorial < 5 &&
+              <svg
+                onClick={() => setTutorial(tutorial + 1)}
+                className="w-6 h-6 cursor-pointer transform delay-150 transition hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+              </svg>
+            }
+          </TransitOpacity>
         </Row>
-        <p className="text-sm italic text-gray-300"> ( não precisa ser em sequência )</p>
       </TransitOpacity>
-      <Row className="justify-between">
-        <TransitOpacity
-          show={tutorial !== 0}
-        >
-          {
-            tutorial !== 0 &&
-            <svg
-              onClick={() => setTutorial(tutorial - 1)}
-              className="w-6 h-6 cursor-pointer transform delay-150 transition hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-          }
-        </TransitOpacity>
-        <TransitOpacity
-          show={tutorial < 5}
-        >
-          {
-            tutorial < 5 &&
-            <svg
-              onClick={() => setTutorial(tutorial + 1)}
-              className="w-6 h-6 cursor-pointer transform delay-150 transition hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-            </svg>
-          }
-        </TransitOpacity>
-      </Row>
-    </TransitOpacity>
-  </>
+    }
+  </div>

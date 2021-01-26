@@ -3,6 +3,7 @@ import { Container, Text } from './styles'
 import { ipcRenderer } from 'electron'
 import Grid from '../base/Grid'
 import { TutorialCavebot } from './Tutorial'
+import { FormCavebot } from './Form'
 
 const Cavebot: React.FC = () => {
   ipcRenderer.on('repong', (_, args) => console.log('args', args))
@@ -18,6 +19,7 @@ const Cavebot: React.FC = () => {
           <Text className="text-2xl" onClick={goToNext}>Cavebot</Text>
         </div>
         <TutorialCavebot tutorial={tutorial} setTutorial={setTutorial} />
+        <FormCavebot />
       </Container>
     </Grid>
   )
