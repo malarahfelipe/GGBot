@@ -1,6 +1,6 @@
 import React from 'react'
 import { ImageWP } from './styles'
-import { Utils } from '../../../common/Utils'
+import { Utils } from '../../../common/models/Utils'
 import { TransitOpacity } from '../base/TransitOpacity'
 import Row from '../base/Row'
 

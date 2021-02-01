@@ -1,11 +1,11 @@
 import * as cv from 'opencv4nodejs'
 import { tmpdir } from 'os'
 import Jimp from 'jimp'
-import { Position } from '../../common/Utils'
+import { Position } from '../../common/models/Utils'
 import { Bitmap } from 'robotjs'
 const { recognize } = require('node-tesseract-ocr')
 
-export const imgDir = `${tmpdir()}/GGBot`
+export const imgDir = `${ tmpdir() }/GGBot`
 
 export const find = async (filePath: string, templatePath: string): Promise<Position> => {
   // Load images

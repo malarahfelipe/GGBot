@@ -1,8 +1,8 @@
 import { getPixelColor, screen } from 'robotjs'
-import { readTextInImage, writeImage, imgDir } from './Image'
-import { Position, Utils } from '../../common/Utils'
+import { readTextInImage, writeImage, imgDir } from '../../models/Image'
+import { Position, Utils } from '../../../common/models/Utils'
+import { Key } from '../../../common/models/Key'
 
-export type Key = 'f1' | 'f2' | 'f3' | 'f4' | 'f5' | 'f6' | 'f7' | 'f8' | 'f9' | 'f10' | 'f11' | 'f12'
 export interface SupportKey {
   check: () => boolean,
   action: () => void,

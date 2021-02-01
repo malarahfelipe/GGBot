@@ -1,5 +1,5 @@
 import { keyTap } from 'robotjs'
-import { StackKey, SupportKey } from './Key'
+import { StackKey, SupportKey } from '../modules/Key/Key'
 import { PlayerScreen } from './PlayerScreen'
 
 export class Player {
@@ -45,7 +45,7 @@ export class Player {
     this._supportKeys = supKeys
     this._supportKeys.forEach(({ check, action, every }) =>
       setInterval(() => {
-        if (check()) { action() }
+        if (check()) action()
       }, every)
     )
   }

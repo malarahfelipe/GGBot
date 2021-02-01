@@ -25,6 +25,7 @@
     "@typescript-eslint"
   ],
   "rules": {
+    "curly": ["error", "multi"],
     "indent": ["error", 2],
     "array-bracket-spacing": ["error", "always"],
     "template-curly-spacing": ["error", "always"],

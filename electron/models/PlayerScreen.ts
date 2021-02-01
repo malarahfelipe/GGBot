@@ -1,5 +1,5 @@
 import { getPixelColor } from 'robotjs'
-import { BarInfo, Utils } from '../../common/Utils'
+import { BarInfo, Utils } from '../../common/models/Utils'
 
 export abstract class PlayerScreen {
   private static getCurrentColor(x = 0, y = 0) {
