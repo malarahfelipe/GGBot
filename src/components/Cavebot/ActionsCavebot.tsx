@@ -7,7 +7,6 @@ import { CavebotStore } from '../../store/Cavebot'
 export const ActionsCavebot: React.FC<ICavebotChildren> = ({
   config, getConfigs, setConfig
 }) => {
-  let startCavebotHandler: number = null
   const loadConfigs = async (): Promise<void> => {
     const configs = await getConfigs()
     console.log('configs', configs)
@@ -19,12 +18,12 @@ export const ActionsCavebot: React.FC<ICavebotChildren> = ({
   const startCavebot = () =>
     setTimeout(async () => {
       const instance = await CavebotStore.getInstance()
-      startCavebotHandler = setInterval(() => instance.goToNextWp(), 4000)
+      instance.startCavebot()
     }
-    , 2000)
+    , 3000)
 
-  const stopCavebot = () =>
-    clearInterval(startCavebotHandler)
+  const stopCavebot = async () =>
+    await (await CavebotStore.getInstance()).stopCavebot()
 
   return (
     <>
@@ -34,9 +33,9 @@ export const ActionsCavebot: React.FC<ICavebotChildren> = ({
           <Row>
             <TransitButton
               color={ { bg: 'green-500', text: 'white' } }
+              onClick={startCavebot}
             >
               <svg
-                onClick={startCavebot}
                 className="w-6 h-6"
                 fill="none"
                 stroke="currentColor"
@@ -55,9 +54,9 @@ export const ActionsCavebot: React.FC<ICavebotChildren> = ({
             </TransitButton>
             <TransitButton
               color={ { bg: 'red-500', text: 'white' } }
+              onClick={stopCavebot}
             >
               <svg
-                onClick={stopCavebot}
                 className="w-6 h-6"
                 fill="none"
                 stroke="currentColor"

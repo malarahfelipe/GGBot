@@ -24,7 +24,7 @@ export const CavebotListener =
 
         ipcMain
           .handle(
-            CAVEBOT_ACTIONS.goToNextWp,
+            CAVEBOT_ACTIONS.startCavebot,
             () =>
               instance.goToNextStep()
           )

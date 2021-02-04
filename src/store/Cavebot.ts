@@ -23,8 +23,12 @@ export class CavebotStore extends BaseStore {
     return this
   }
 
-  goToNextWp(): Promise<void> {
-    return this.invoke(CAVEBOT_ACTIONS.goToNextWp)
+  startCavebot(): Promise<void> {
+    return this.invoke(CAVEBOT_ACTIONS.startCavebot)
+  }
+
+  stopCavebot(): Promise<void> {
+    return this.invoke(CAVEBOT_ACTIONS.stopCavebot)
   }
 
   checkSupply(): Promise<void> {

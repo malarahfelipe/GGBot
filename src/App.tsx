@@ -5,6 +5,7 @@ import './styles/tailwind.css'
 import Screen from './components/Screen'
 import Cavebot from './components/Cavebot'
 import { Container } from './components/Cavebot/styles'
+import { GlobalStyle } from './styles/GlobalStyle'
 
 const mainElement = document.createElement('div')
 mainElement.setAttribute('id', 'root')
@@ -15,16 +16,30 @@ document.body.appendChild(mainElement)
 
 const App = () => {
   const [ started, setStarted ] = useState(false)
-  return (
+  const notStartedClasses = 'blur-md cursor-not-allowed pointer-events-none'
+  return <>
+    <GlobalStyle />
     <Grid className="grid-cols-12">
-      <Container className="col-start-6 col-span-4 space-y-4">
-        <Screen started={started} setStarted={setStarted} />
+      <Container className={`${ !started ? `${ notStartedClasses } col-span-2` : 'col-span-3' } space-y-4`}>
+        <Cavebot />
       </Container>
-      <Container className={`${ !started ? 'bg-blur-md cursor-none' : '' } col-start-8 col-span-4 space-y-4`}>
+      <Container className={`${ !started ? `${ notStartedClasses } col-span-2` : 'col-span-3' } space-y-4`}>
+        <Cavebot />
+      </Container>
+      {
+        !started &&
+        <Container className="col-span-4 space-y-2">
+          <Screen started={started} setStarted={setStarted} />
+        </Container>
+      }
+      <Container className={`${ !started ? `${ notStartedClasses } col-span-2` : 'col-span-3' } space-y-4`}>
+        <Cavebot />
+      </Container>
+      <Container className={`${ !started ? `${ notStartedClasses } col-span-2` : 'col-span-3' } space-y-4`}>
         <Cavebot />
       </Container>
     </Grid>
-  )
+  </>
 }
 
 render(<App />, mainElement)

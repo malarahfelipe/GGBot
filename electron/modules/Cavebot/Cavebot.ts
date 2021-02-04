@@ -6,6 +6,8 @@ import { SupplyKey } from '../../../common/models/SupplyKey'
 import { Supplier } from '../Supplier/Supplier'
 import { ActionWalk } from '../../../common/models/ActionAlpha'
 import { getAssetPositionOnScreen } from '../../models/Image'
+import { interval, BehaviorSubject, Subscription } from 'rxjs'
+import { moveMouse, mouseClick } from 'robotjs'
 
 export class Cavebot {
   private startCavebotHandler: number = null
@@ -15,6 +17,7 @@ export class Cavebot {
   private configs: CavebotConfig[]
   private path: ActionWalk[]
   private supplies: SupplyKey[]
+  private cavebotWalkerSubscription: Subscription = null
   private constructor() { }
 
   static async getInstance(): Promise<Cavebot> {
@@ -45,14 +48,14 @@ export class Cavebot {
             alpha: 'F',
             action: {
               name: 'Andar',
-              handler: CAVEBOT_ACTIONS.goToNextWp
+              handler: CAVEBOT_ACTIONS.startCavebot
             }
           },
           {
             alpha: 'G',
             action: {
               name: 'Andar',
-              handler: CAVEBOT_ACTIONS.goToNextWp
+              handler: CAVEBOT_ACTIONS.startCavebot
             }
           }
         ],
@@ -68,21 +71,21 @@ export class Cavebot {
             alpha: 'B',
             action: {
               name: 'Andar',
-              handler: CAVEBOT_ACTIONS.goToNextWp
+              handler: CAVEBOT_ACTIONS.startCavebot
             }
           },
           {
             alpha: 'C',
             action: {
               name: 'Andar',
-              handler: CAVEBOT_ACTIONS.goToNextWp
+              handler: CAVEBOT_ACTIONS.startCavebot
             }
           },
           {
             alpha: 'D',
             action: {
               name: 'Andar',
-              handler: CAVEBOT_ACTIONS.goToNextWp
+              handler: CAVEBOT_ACTIONS.startCavebot
             }
           }
         ]
@@ -102,41 +105,40 @@ export class Cavebot {
     return this.config
   }
 
-  public startCavebot(): void {
-    setTimeout(() => {
-      this.startCavebotHandler = setInterval(() => this.goToNextStep(), 150)
-    }, 2000)
+  public async startCavebot(): Promise<void> {
+    const reachingSubject = await this.goToNextStep()
+    if (this.cavebotWalkerSubscription)
+      this.cavebotWalkerSubscription.unsubscribe()
+    this.cavebotWalkerSubscription = reachingSubject.subscribe({
+      complete: this.startCavebot
+    })
   }
 
   public stopCavebot(): void {
-    clearInterval(this.startCavebotHandler)
+    if (this.cavebotWalkerSubscription)
+      this.cavebotWalkerSubscription.unsubscribe()
   }
 
-  public async goToNextStep(): Promise<void> {
-    const minimapInstance = await MiniMap.getInstance()
-    if (!minimapInstance) return
+  private getNextAlpha(): Alpha {
     const alphabet = this.path.map(({ alpha }) => alpha)
     const currentPosition = alphabet.indexOf(this.currentStep)
     const nextIndex = (currentPosition + 1) < alphabet.length ? currentPosition + 1 : 0
-    const nextAlpha = alphabet[nextIndex]
-    this.stopCavebot()
-    const { x, y } = await minimapInstance.getAlphaPositionInMinimap(nextAlpha)
-    const isReaching = x !== null && y !== null
-    if (this.currentStep && isReaching)
-      return
-    console.log('isReaching', isReaching)
-    console.log('this.currentStep', this.currentStep)
-    return (await MiniMap.getInstance())
-      .goTo(this.currentStep)
+    return alphabet[nextIndex]
+  }
+
+  public async goToNextStep(): Promise<BehaviorSubject<boolean>> {
+    const minimapInstance = await MiniMap.getInstance()
+    this.currentStep = this.getNextAlpha()
+    return minimapInstance.goTo(this.currentStep)
   }
 
   public async checkSupply(): Promise<void> {
     const needsSupply = (await Promise.all(this.supplies.map(Supplier.isBelowMin))).some(isBelowMin => !!isBelowMin)
     if (needsSupply) {
-      this.currentStep = null
+      this.stopCavebot()
       this.path = this.config.goOutPath
     }
-    return this.goToNextStep()
+    return this.startCavebot()
   }
 
   public async refillMana(): Promise<void> {

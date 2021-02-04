@@ -1,6 +1,7 @@
 
 export enum CAVEBOT_ACTIONS {
   'checkSupply' = 'cavebot_checkSupply',
-  'goToNextWp' = 'cavebot_goToNextWp',
+  'startCavebot' = 'cavebot_startCavebot',
+  'stopCavebot' = 'cavebot_stopCavebot',
   'refillMana' = 'cavebot_refillMana'
 }

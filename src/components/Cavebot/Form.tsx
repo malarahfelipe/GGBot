@@ -52,9 +52,9 @@ export const FormCavebot: React.FC<ICavebotChildren> = ({
           }
           <TransitButton
             color={{ bg: 'gray-200', text: 'green-800' }}
+            onClick={createNewActionAlpha}
           >
             <Row
-              onClick={createNewActionAlpha}
               className="mx-auto space-x-4 text-center w-max"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

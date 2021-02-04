@@ -13,4 +13,4 @@ export interface ActionWalk {
 }
 
 export const createActionAlpha = (alpha: Alpha): ActionAlpha =>
-  ({ alpha, action: { name: 'Andar', handler: ACTIONS.goToNextWp } })
+  ({ alpha, action: { name: 'Andar', handler: ACTIONS.startCavebot } })

@@ -6,13 +6,20 @@ export interface ITransitButton {
     text: string
   },
   to?: 'up' | 'down' | 'left' | 'right'
+  onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
-export const TransitButton: React.FC<ITransitButton> = ({ color: { bg, text }, to = 'up', children }) =>
-  <div
+
+export const TransitButton: React.FC<ITransitButton> = ({ onClick, color: { bg, text }, to = 'up', children }) =>
+  <button
+    type="button"
+    onClick={onClick}
     className={
       `rounded
-        p-1 m-1
+        px-4 py-2 m-1
+        flex flex-row
         cursor-pointer
+        border
+        border-${ bg }
         bg-${ bg } text-${ text }
         hover:text-${ bg } hover:bg-${ text }
         transform transition ease-out
@@ -20,4 +27,4 @@ export const TransitButton: React.FC<ITransitButton> = ({ color: { bg, text }, t
     }
   >
     { children }
-  </div>
+  </button>

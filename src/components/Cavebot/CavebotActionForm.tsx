@@ -51,7 +51,7 @@ export const useCavebotActions = ([ oldActions, setActions ]: IUseCavebot): IUsi
   ] = [
     {
       name: 'Andar',
-      handler: CAVEBOT_ACTIONS.goToNextWp
+      handler: CAVEBOT_ACTIONS.startCavebot
     },
     {
       name: 'Checar supply',

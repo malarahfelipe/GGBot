@@ -1,4 +1,4 @@
-import { Observable, Subject, interval } from 'rxjs'
+import { Observable, Subject, interval, BehaviorSubject } from 'rxjs'
 import { moveMouse, screen, Bitmap, mouseClick } from 'robotjs'
 import { Position, Alpha } from '../../../common/models/Utils'
 import { find, imgDir, writeImageFromBitmap } from '../../models/Image'
@@ -18,15 +18,14 @@ export class MiniMap {
     return this
   }
 
+  static getCentralMiniMapImage(): Bitmap {
+    const { startsAt: { x, y } } = this.getInfo()
+    return screen.capture(x + 47, y + 47, 12, 12)
+  }
+
   static getMiniMapImage(): Bitmap {
     const { startsAt: { x, y }, width: mapWidth, height: mapHeight } = this.getInfo()
     return screen.capture(x, y, mapWidth, mapHeight)
-    /*
-    console.log('typeof data', typeof data)
-    console.log('isBuffer', Buffer.isBuffer(data))
-    console.log('isView', ArrayBuffer.isView(data))
-    console.log('bites', data.constructor.BYTES_PER_ELEMENT)
-    */
   }
 
   static getInfo(): { startsAt: { x: number, y: number }, width: number, height: number } {
@@ -41,12 +40,17 @@ export class MiniMap {
     }
   }
 
+  async screenShotCentralPositionInMinimap(): Promise<string> {
+    const bitmap = MiniMap.getCentralMiniMapImage()
+    const centralMiniMapPath = `${ imgDir() }/miniMapCentral.png`
+    await writeImageFromBitmap(bitmap, centralMiniMapPath)
+    return centralMiniMapPath
+  }
+
   async screenShotMiniMap(): Promise<string> {
     const bitmap = MiniMap.getMiniMapImage()
     const miniMapPath = `${ imgDir() }/miniMap.png`
-    console.log('screenShotMiniMap.miniMapPath', miniMapPath)
     await writeImageFromBitmap(bitmap, miniMapPath)
-    console.log('writed down image')
     return miniMapPath
   }
 
@@ -73,13 +77,35 @@ export class MiniMap {
     return this.getPositionInMinimap('Location.png')
   }
 
-  async goTo(alpha: Alpha): Promise<void> {
+  async hasReachedAlpha(alpha: Alpha): Promise<boolean> {
+    const minimapCentralImagePath = await this.screenShotCentralPositionInMinimap()
+    const imagePath = this.getImage(`${ alpha }.png`)
+    const { x, y } = await find(imagePath, minimapCentralImagePath)
+    console.log('result', { x, y })
+    return x > 0 && y > 0
+  }
+
+  async goTo(alpha: Alpha): Promise<BehaviorSubject<boolean>> {
     const position = await this.getAlphaPositionInMinimap(alpha)
     console.log('result', position)
     const { startsAt } = MiniMap.getInfo()
     const { x, y } = { x: startsAt.x + position.x, y: startsAt.y + position.y }
     moveMouse(x, y)
     mouseClick()
+    const onReachSubject = new BehaviorSubject<boolean>(false)
+    const onReachInterval = setTimeout(async () => {
+      const reach = await this.hasReachedAlpha(alpha).catch(() => false)
+      onReachSubject.next(reach)
+    }, 650)
+    onReachSubject.subscribe({
+      next: (reach) => {
+        if (reach) {
+          clearInterval(onReachInterval)
+          onReachSubject.complete()
+        }
+      }
+    })
+    return onReachSubject
     // const onReachObservable = new Observable(observer => {
     //   const checkReachInterval = setInterval(async () => {
     //     await this.get

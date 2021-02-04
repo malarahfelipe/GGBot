@@ -17,9 +17,10 @@ export class Screen {
     else throw new Error('[Screen]: no higgs position')
   }
 
-  public async screenShotHiggsPosition(): Promise<void> {
+  public async screenShotHiggsPosition(): Promise<Position> {
     const { x, y } = await getAssetPositionOnScreen('RightArrowLeftSide')
     if (x < 100 && y < 100)
       this.higgsPosition = { x, y }
+    return this.higgsPosition
   }
 }
