@@ -5,8 +5,10 @@ import { CAVEBOT_ACTIONS } from '../../../common/models/CavebotActions.enum'
 import { SupplyKey } from '../../../common/models/SupplyKey'
 import { Supplier } from '../Supplier/Supplier'
 import { ActionWalk } from '../../../common/models/ActionAlpha'
+import { getAssetPositionOnScreen } from '../../models/Image'
 
 export class Cavebot {
+  private startCavebotHandler: number = null
   private currentStep: Alpha = null
   private static instance: Cavebot
   private config: CavebotConfig
@@ -100,13 +102,32 @@ export class Cavebot {
     return this.config
   }
 
+  public startCavebot(): void {
+    setTimeout(() => {
+      this.startCavebotHandler = setInterval(() => this.goToNextStep(), 150)
+    }, 2000)
+  }
+
+  public stopCavebot(): void {
+    clearInterval(this.startCavebotHandler)
+  }
+
   public async goToNextStep(): Promise<void> {
+    const minimapInstance = await MiniMap.getInstance()
+    if (!minimapInstance) return
     const alphabet = this.path.map(({ alpha }) => alpha)
     const currentPosition = alphabet.indexOf(this.currentStep)
     const nextIndex = (currentPosition + 1) < alphabet.length ? currentPosition + 1 : 0
-    this.currentStep = alphabet[nextIndex]
+    const nextAlpha = alphabet[nextIndex]
+    this.stopCavebot()
+    const { x, y } = await minimapInstance.getAlphaPositionInMinimap(nextAlpha)
+    const isReaching = x !== null && y !== null
+    if (this.currentStep && isReaching)
+      return
+    console.log('isReaching', isReaching)
     console.log('this.currentStep', this.currentStep)
-    return (await MiniMap.getInstance()).goTo(this.currentStep)
+    return (await MiniMap.getInstance())
+      .goTo(this.currentStep)
   }
 
   public async checkSupply(): Promise<void> {

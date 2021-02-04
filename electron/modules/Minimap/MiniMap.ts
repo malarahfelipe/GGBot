@@ -1,8 +1,9 @@
-
+import { Observable, Subject, interval } from 'rxjs'
 import { moveMouse, screen, Bitmap, mouseClick } from 'robotjs'
 import { Position, Alpha } from '../../../common/models/Utils'
 import { find, imgDir, writeImageFromBitmap } from '../../models/Image'
 import { resolve } from 'path'
+import { Screen } from '../Screen/Screen'
 export class MiniMap {
   private constructor() { }
 
@@ -29,33 +30,47 @@ export class MiniMap {
   }
 
   static getInfo(): { startsAt: { x: number, y: number }, width: number, height: number } {
+    const { x, y } = Screen.getInstance().getHiggsPosition()
     return {
       startsAt: {
-        x: 1199,
-        y: 28
-        /*
-        FAKE:
-        x: 700,
-        y: 28
-        */
+        x: x + 1127,
+        y: y + 5
       },
-      width: 600,
-      height: 700
+      width: 105,
+      height: 108
     }
   }
 
-  async saveMinimapImage(): Promise<string> {
+  async screenShotMiniMap(): Promise<string> {
     const bitmap = MiniMap.getMiniMapImage()
-    const miniMapPath = `${ imgDir }/miniMap.png`
+    const miniMapPath = `${ imgDir() }/miniMap.png`
+    console.log('screenShotMiniMap.miniMapPath', miniMapPath)
     await writeImageFromBitmap(bitmap, miniMapPath)
+    console.log('writed down image')
     return miniMapPath
   }
 
-  async getAlphaPositionInMinimap(alpha: Alpha): Promise<Position> {
-    const miniMapPath = await this.saveMinimapImage()
-    const alphaPath = resolve(__dirname, '..', 'assets', `${ alpha }.png`)
-    const result = await find(alphaPath, miniMapPath)
+  getImage(imageName: string): string {
+    return resolve(__dirname, '..', 'assets', imageName)
+  }
+
+  private async getPositionInMinimap(imageName: string): Promise<Position> {
+    const miniMapPath = await this.screenShotMiniMap()
+    const imagePath = this.getImage(imageName)
+    const result = await find(imagePath, miniMapPath)
     return result
+  }
+
+  async getAlphaPositionInMinimap(alpha: Alpha): Promise<Position> {
+    return this.getPositionInMinimap(`${ alpha }.png`)
+  }
+
+  async getMarkPositionInMinimap(): Promise<Position> {
+    return this.getPositionInMinimap('Mark.png')
+  }
+
+  async getLocationPositionInMinimap(): Promise<Position> {
+    return this.getPositionInMinimap('Location.png')
   }
 
   async goTo(alpha: Alpha): Promise<void> {
@@ -65,5 +80,17 @@ export class MiniMap {
     const { x, y } = { x: startsAt.x + position.x, y: startsAt.y + position.y }
     moveMouse(x, y)
     mouseClick()
+    // const onReachObservable = new Observable(observer => {
+    //   const checkReachInterval = setInterval(async () => {
+    //     await this.get
+    //   }, 150)
+    //   return () => clearInterval(checkReachInterval)
+    // })
+    // checkReachInterval.subscribe(subscription => {
+    //   next: () =>
+    // })
+    // const onReachSubject = new Subject()
+    // onReachSubject.
+    // onReachSubject
   }
 }

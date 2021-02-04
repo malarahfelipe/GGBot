@@ -1,7 +1,8 @@
 import { getPixelColor, screen } from 'robotjs'
 import { readTextInImage, writeImage, imgDir } from '../../models/Image'
-import { Position, Utils } from '../../../common/models/Utils'
+import { Position, Utils, StartPosition } from '../../../common/models/Utils'
 import { Key } from '../../../common/models/Key'
+import { Screen } from '../Screen/Screen'
 
 export interface SupportKey {
   check: () => boolean,
@@ -14,22 +15,35 @@ export interface StackKey {
   min: number
 }
 export abstract class KeyScreen {
-  static getPositionFromKey(key: Key = 'f1'): Position {
-    const { f1 } = Utils.getHotkeyInfo()
+  static getFirstHotkeyPosition(): { f1: StartPosition } {
+    const { x, y } = Screen.getInstance().getHiggsPosition()
     return {
-      y: f1.startsAt.y,
-      x: f1.startsAt.x + ((Number(key.split('f').pop()) - 1) * Utils.getHotkeyInfo().hotkeyPixelsDistance)
+      f1: {
+        startsAt: {
+          x: x + 20,
+          y: y + 517
+        }
+      }
+    }
+  }
+
+  static getPositionFromKey(key: Key = 'f1'): Position {
+    const { f1: { startsAt: { x, y } } } = this.getFirstHotkeyPosition()
+    return {
+      y: y,
+      x: x + ((Number(key.split('f').pop()) - 1) * Utils.getHotkeyInfo().hotkeyPixelsDistance)
     }
   }
 
   static async getKeyStackAmount(key: Key = 'f1'): Promise<number> {
-    const { x } = this.getPositionFromKey(key)
-    const width = Utils.getHotkeyInfo().hotkeyPixelsWidth
+    const { x, y } = this.getPositionFromKey(key)
+    const { hotkeyPixelsSize } = Utils.getHotkeyInfo()
     const height = 8
-    const { image } = screen.capture(x, 604, width, height)
-    const fileName = `${ imgDir }\\${ key }.png`
-    console.log('fileName', `${ imgDir }\\${ key }.png`)
-    return writeImage(image, fileName, width, height)
+    const startingY = y + hotkeyPixelsSize - height
+    const { image } = screen.capture(x, startingY, hotkeyPixelsSize, height)
+    const fileName = `${ imgDir() }\\${ key }.png`
+    console.log('fileName', `${ imgDir() }\\${ key }.png`)
+    return writeImage(image, fileName)
       .then(async () => {
         const rawAmount = await readTextInImage(fileName)
         const keyAmount = Number(rawAmount.replace(/.*?(\d+).*?$/m, '$1'))

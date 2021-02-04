@@ -5,7 +5,7 @@ module.exports = {
   },
   purge: {
     mode: 'layers',
-    layers: ['base', 'components', 'utilities'],
+    layers: [ 'base', 'components', 'utilities' ],
     content: [
       './src/**/*.html',
       './src/**/*.vue',
@@ -58,6 +58,7 @@ module.exports = {
   },
   variants: {},
   plugins: [
+    require('tailwind-filter-utilities'),
     require('@tailwindcss/custom-forms')
   ]
 }

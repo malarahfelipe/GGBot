@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { render } from 'react-dom'
-import { GlobalStyle } from './styles/GlobalStyle'
+import Grid from './components/base/Grid'
 import './styles/tailwind.css'
+import Screen from './components/Screen'
 import Cavebot from './components/Cavebot'
+import { Container } from './components/Cavebot/styles'
 
 const mainElement = document.createElement('div')
 mainElement.setAttribute('id', 'root')
@@ -12,11 +14,16 @@ document.body.appendChild(modalElement)
 document.body.appendChild(mainElement)
 
 const App = () => {
+  const [ started, setStarted ] = useState(false)
   return (
-    <>
-      <GlobalStyle />
-      <Cavebot />
-    </>
+    <Grid className="grid-cols-12">
+      <Container className="col-start-6 col-span-4 space-y-4">
+        <Screen started={started} setStarted={setStarted} />
+      </Container>
+      <Container className={`${ !started ? 'bg-blur-md cursor-none' : '' } col-start-8 col-span-4 space-y-4`}>
+        <Cavebot />
+      </Container>
+    </Grid>
   )
 }
 

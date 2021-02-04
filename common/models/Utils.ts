@@ -2,32 +2,20 @@ export type Alpha = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 
 
 export interface BarInfo {
   filledColor: string,
-  emptyColor: string,
-  startsAt: {
-    x: number,
-    y: number
-  }
+  emptyColor: string
 }
 export abstract class Utils {
   public static getHealthInfo(): BarInfo {
     return {
-      filledColor: 'c04040',
-      emptyColor: '623234',
-      startsAt: {
-        x: 1210,
-        y: 146
-      }
+      filledColor: 'DB4F4F',
+      emptyColor: '623234'
     }
   }
 
   public static getManaInfo(): BarInfo {
     return {
-      filledColor: '7471ff',
-      emptyColor: '623234',
-      startsAt: {
-        x: 1210,
-        y: 162
-      }
+      filledColor: '5350DA',
+      emptyColor: '623234'
     }
   }
 
@@ -39,13 +27,7 @@ export abstract class Utils {
 
   public static getHotkeyInfo() {
     return {
-      f1: {
-        startsAt: {
-          x: 85,
-          y: 581
-        }
-      },
-      hotkeyPixelsWidth: 31,
+      hotkeyPixelsSize: 31,
       hotkeyPixelsDistance: 36
     }
   }
@@ -67,4 +49,8 @@ export abstract class Utils {
 export interface Position {
   x: number,
   y: number
+}
+
+export interface StartPosition {
+  startsAt: Position
 }

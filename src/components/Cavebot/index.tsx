@@ -30,19 +30,17 @@ const Cavebot: React.FC = () => {
       .then(setConfig)
 
   return (
-    <Grid className="grid-cols-12">
-      <Container className="col-start-8 col-span-4 space-y-4">
-        <div className="w-full border-b-2 border-white p-2">
-          <Text className="text-2xl">Cavebot</Text>
-        </div>
-        <TutorialCavebot tutorial={tutorial} setTutorial={setTutorial} />
-        {
-          config &&
-          <FormCavebot config={config} setConfig={onSetConfig} />
-        }
-        <ActionsCavebot config={config} getConfigs={getConfigs} setConfig={onSetConfig} />
-      </Container>
-    </Grid>
+    <>
+      <div className="w-full border-b-2 border-white p-2">
+        <Text className="text-2xl">Cavebot</Text>
+      </div>
+      <TutorialCavebot tutorial={tutorial} setTutorial={setTutorial} />
+      {
+        config &&
+        <FormCavebot config={config} setConfig={onSetConfig} />
+      }
+      <ActionsCavebot config={config} getConfigs={getConfigs} setConfig={onSetConfig} />
+    </>
   )
 }
 
