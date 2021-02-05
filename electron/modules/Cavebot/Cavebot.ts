@@ -110,7 +110,13 @@ export class Cavebot {
     if (this.cavebotWalkerSubscription)
       this.cavebotWalkerSubscription.unsubscribe()
     this.cavebotWalkerSubscription = reachingSubject.subscribe({
-      complete: this.startCavebot
+      next: (reach) => {
+        console.log('on cavebot, reach', reach)
+        if (!reach) return
+
+        reachingSubject.complete()
+        this.startCavebot()
+      }
     })
   }
 
@@ -127,9 +133,8 @@ export class Cavebot {
   }
 
   public async goToNextStep(): Promise<BehaviorSubject<boolean>> {
-    const minimapInstance = await MiniMap.getInstance()
     this.currentStep = this.getNextAlpha()
-    return minimapInstance.goTo(this.currentStep)
+    return (await MiniMap.getInstance()).goTo(this.currentStep)
   }
 
   public async checkSupply(): Promise<void> {

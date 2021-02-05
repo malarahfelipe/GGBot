@@ -10,7 +10,7 @@ export class CavebotStore extends BaseStore {
   private configs: Array<CavebotConfig>
 
   private constructor() {
-    super()
+    super('CavebotStore')
   }
 
   static async getInstance(): Promise<CavebotStore> {

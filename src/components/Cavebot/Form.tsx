@@ -35,7 +35,7 @@ export const FormCavebot: React.FC<ICavebotChildren> = ({
         }
       >
         <div
-          className="flex flex-col rounded border border-black p-2 m-1 text-center"
+          className="flex flex-col rounded border border-black p-2 m-1 text-center overflow-y-scroll max-h-72"
         >
           <label className="mx-auto inline-flex items-center border-b border-white w-full text-center">
             <span className="mx-auto">Caminho</span>

@@ -11,6 +11,7 @@ const mainElement = document.createElement('div')
 mainElement.setAttribute('id', 'root')
 const modalElement = document.createElement('div')
 modalElement.setAttribute('id', 'modal')
+document.body.classList.add('overflow-y-hidden')
 document.body.appendChild(modalElement)
 document.body.appendChild(mainElement)
 
@@ -29,7 +30,7 @@ const App = () => {
       {
         !started &&
         <Container className="col-span-4 space-y-2">
-          <Screen started={started} setStarted={setStarted} />
+          <Screen setStarted={setStarted} />
         </Container>
       }
       <Container className={`${ !started ? `${ notStartedClasses } col-span-2` : 'col-span-3' } space-y-4`}>

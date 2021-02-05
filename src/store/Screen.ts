@@ -5,7 +5,7 @@ export class ScreenStore extends BaseStore {
   private static instance: ScreenStore
 
   private constructor() {
-    super()
+    super('ScreenStore')
   }
 
   static async getInstance(): Promise<ScreenStore> {
