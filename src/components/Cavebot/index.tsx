@@ -1,45 +1,43 @@
 import React, { useState } from 'react'
-import { Container, Text } from './styles'
-import Grid from '../base/Grid'
+import { Text } from '../base/styles'
 import { TutorialCavebot } from './Tutorial'
 import { FormCavebot } from './Form'
-import { ActionsCavebot } from './ActionsCavebot'
+import { Actions } from '../base/Actions'
 import { CavebotConfig } from '../../../common/models/CavebotConfig'
+import { IChildren } from '../../models/Children.interface'
 import { CavebotStore } from '../../store/Cavebot'
+import { Counter } from '../base/Counter'
 
-const Cavebot: React.FC = () => {
+const Cavebot: React.FC<IChildren> = ({ config, setConfig }) => {
+  const { cavebot } = config
   const [ tutorial, setTutorial ] = useState(-1)
-  const [ config, setConfig ] = useState<CavebotConfig>()
+  const setCavebotConfig = (cavebotConfig: CavebotConfig) =>
+    setConfig(Object.assign(config, { cavebot: cavebotConfig }))
 
-  const getConfigs = (): Promise<CavebotConfig[]> =>
-    CavebotStore
-      .getInstance()
-      .then(instance =>
-        instance.load()
-          .then(() =>
-            instance.getConfigs()
-          )
-      )
+  const startCavebot = async () => {
+    const instance = await CavebotStore.getInstance()
+    const onReachZero = () => instance.start()
+    const { start } = Counter({ onReachZero })
+    start()
+  }
 
-  const onSetConfig = (config: CavebotConfig) =>
-    CavebotStore
-      .getInstance()
-      .then(instance =>
-        instance.setConfig(config)
-      )
-      .then(setConfig)
+  const stopCavebot = async () => {
+    const instance = await CavebotStore.getInstance()
+    instance.stop()
+  }
 
   return (
     <>
-      <div className="w-full border-b-2 border-white p-2">
+      <div className="w-full border-b-2 border-white py-2 px-0.5">
         <Text className="text-2xl">Cavebot</Text>
       </div>
       <TutorialCavebot tutorial={tutorial} setTutorial={setTutorial} />
       {
-        config &&
-        <FormCavebot config={config} setConfig={onSetConfig} />
+        cavebot && <>
+          <FormCavebot cavebot={cavebot} setConfig={setCavebotConfig} />
+          <Actions onPlay={startCavebot} onStop={stopCavebot} />
+        </>
       }
-      <ActionsCavebot config={config} getConfigs={getConfigs} setConfig={onSetConfig} />
     </>
   )
 }

@@ -1,7 +1,7 @@
 import { CAVEBOT_ACTIONS } from '../../../common/models/CavebotActions.enum'
-import { CAVEBOT_CONFIG_ACTIONS } from '../../../common/models/CavebotConfigActions.enum'
 import { ipcMain } from '../../services/listener/ipc.service'
 import { Cavebot } from './Cavebot'
+import { AGENT_ACTIONS } from '../../../common/models/Agent.dynamic-enum'
 
 export const CavebotListener =
 ({
@@ -12,30 +12,16 @@ export const CavebotListener =
 
         handler
           .handle(
-            CAVEBOT_CONFIG_ACTIONS.get,
+            AGENT_ACTIONS('cavebot').start,
             () =>
-              instance.getConfigs()
+              instance.resume()
           )
 
         handler
           .handle(
-            CAVEBOT_CONFIG_ACTIONS.set,
-            (_, { id }) =>
-              instance.setConfig(id)
-          )
-
-        handler
-          .handle(
-            CAVEBOT_ACTIONS.startCavebot,
+            AGENT_ACTIONS('cavebot').stop,
             () =>
-              instance.startCavebot()
-          )
-
-        handler
-          .handle(
-            CAVEBOT_ACTIONS.stopCavebot,
-            () =>
-              instance.startCavebot()
+              instance.pause()
           )
 
         handler

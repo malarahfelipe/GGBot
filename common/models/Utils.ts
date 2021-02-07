@@ -5,20 +5,6 @@ export interface BarInfo {
   emptyColor: string
 }
 export abstract class Utils {
-  public static getHealthInfo(): BarInfo {
-    return {
-      filledColor: 'DB4F4F',
-      emptyColor: '623234'
-    }
-  }
-
-  public static getManaInfo(): BarInfo {
-    return {
-      filledColor: '5350DA',
-      emptyColor: '623234'
-    }
-  }
-
   public static getStackInfo() {
     return {
       emptyColor: '363636'
@@ -38,12 +24,10 @@ export abstract class Utils {
     ]
   }
 
-  public static nextAlpha(alpha: Alpha): Alpha {
+  public static nextAlpha(alpha: Alpha, alphabet: Alpha[] = this.getAlphabet()): Alpha {
     if (!alpha) return 'A'
-    else {
-      const alphabet = this.getAlphabet()
-      return alphabet[alphabet.indexOf(alpha) + 1] ?? 'A'
-    }
+    else
+      return alphabet[alphabet.indexOf(alpha) + 1] ?? alphabet[0]
   }
 }
 export interface Position {
@@ -51,6 +35,7 @@ export interface Position {
   y: number
 }
 
-export interface StartPosition {
+export interface FullPosition {
   startsAt: Position
+  endsAt?: Position
 }

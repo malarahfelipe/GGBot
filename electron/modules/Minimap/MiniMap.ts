@@ -20,7 +20,7 @@ export class MiniMap {
 
   static getCentralMiniMapImage(): Bitmap {
     const { startsAt: { x, y } } = this.getInfo()
-    return screen.capture(x + 47, y + 47, 12, 12)
+    return screen.capture(x + 46, y + 48, 10, 10)
   }
 
   static getMiniMapImage(): Bitmap {
@@ -82,38 +82,16 @@ export class MiniMap {
     const imagePath = this.getImage(`${ alpha }.png`)
     const { x, y } = await find(imagePath, minimapCentralImagePath)
     console.log('result', { x, y })
-    return x > 0 && y > 0 && x === y
+    return x === 3 && y === 3
   }
 
-  async goTo(alpha: Alpha): Promise<BehaviorSubject<boolean>> {
+  async goTo(alpha: Alpha): Promise<void> {
     const position = await this.getAlphaPositionInMinimap(alpha)
-    console.log('result', position)
     const { startsAt } = MiniMap.getInfo()
     const { x, y } = { x: startsAt.x + position.x, y: startsAt.y + position.y }
     moveMouse(x, y)
     mouseClick()
     const higgs = Screen.getInstance().getHiggsPosition()
     moveMouse(higgs.x, higgs.y)
-    const onReachSubject = new BehaviorSubject<boolean>(false)
-    const onReachInterval = setTimeout(async () => {
-      const reach = await this.hasReachedAlpha(alpha).catch(() => false)
-      console.log('reach', reach)
-      onReachSubject.next(reach)
-      if (reach)
-        clearInterval(onReachInterval)
-    }, 650)
-    return onReachSubject
-    // const onReachObservable = new Observable(observer => {
-    //   const checkReachInterval = setInterval(async () => {
-    //     await this.get
-    //   }, 150)
-    //   return () => clearInterval(checkReachInterval)
-    // })
-    // checkReachInterval.subscribe(subscription => {
-    //   next: () =>
-    // })
-    // const onReachSubject = new Subject()
-    // onReachSubject.
-    // onReachSubject
   }
 }

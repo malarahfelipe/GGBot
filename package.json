@@ -9,7 +9,7 @@
     "webpack:react": "cross-env NODE_ENV=development webpack-dev-server --config webpack/react.webpack.js --mode development",
     "dev:electron": "npm run webpack:electron && npm run start:electron",
     "electron:serve": "wait-on http-get://localhost:4000/ && npm run dev:electron",
-    "start:electron": "electron .",
+    "start:electron": "electron --enable-transparent-visuals --disable-gpu .",
     "electron-rebuild": "electron-rebuild -w opencv4nodejs",
     "build:dependencies": "npm rebuild --runtime=electron --target=8.2.2 --disturl=https://atom.io/download/atom-shell --abi=1213 && electron-rebuild -w opencv4nodejs",
     "build": "npm-run-all build:electron build:react",

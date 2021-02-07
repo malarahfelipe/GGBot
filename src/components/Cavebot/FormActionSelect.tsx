@@ -12,6 +12,8 @@ export interface IFormActionSelect {
 }
 
 export const FormActionSelect: React.FC<IFormActionSelect> = ({ actionAlpha: { alpha, action }, onSetActionAlpha }) => {
+  const [ isHover, setHover ] = useState(null)
+
   const optionWps =
     Utils
       .getAlphabet()
@@ -26,11 +28,11 @@ export const FormActionSelect: React.FC<IFormActionSelect> = ({ actionAlpha: { a
       )
 
   return (
-    <Row className="m-1 text-white text-center space-x-1">
-      <label className="block w-full">
-        <span>Marcador</span>
+    <Row className="m-1 text-white text-center space-x-1 relative" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+      <label className="block w-full" style={ { maxWidth: '3rem' } }>
+        <span>Mark</span>
         <CustomSelect
-          className="form-select mt-1 block w-full rounded"
+          className="form-select mt-1 block w-full rounded max-w-16"
           childClassName="transform transition ease-out hover:-translate-x-1"
           selected={Utils.getAlphabet().indexOf(alpha)}
         >
@@ -39,10 +41,13 @@ export const FormActionSelect: React.FC<IFormActionSelect> = ({ actionAlpha: { a
           }
         </CustomSelect>
       </label>
-      <CavebotAction action={action} />
-      <label className="block w-full">
-        <span>&#9001;&nbsp;\&nbsp;&#9002;</span>
-        <span className="block w-full">
+      {
+        action &&
+          <CavebotAction action={action} />
+      }
+      {
+        isHover &&
+        <span className="absolute block w-full right-0 top-0">
           <svg className="cursor-pointer m-auto w-6 h-6 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path
               strokeLinecap="round"
@@ -52,7 +57,7 @@ export const FormActionSelect: React.FC<IFormActionSelect> = ({ actionAlpha: { a
             </path>
           </svg>
         </span>
-      </label>
+      }
     </Row>
   )
 }

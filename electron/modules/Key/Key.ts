@@ -1,6 +1,6 @@
 import { getPixelColor, screen } from 'robotjs'
 import { readTextInImage, writeImage, imgDir } from '../../models/Image'
-import { Position, Utils, StartPosition } from '../../../common/models/Utils'
+import { Position, Utils, FullPosition } from '../../../common/models/Utils'
 import { Key } from '../../../common/models/Key'
 import { Screen } from '../Screen/Screen'
 
@@ -10,12 +10,8 @@ export interface SupportKey {
   // in ms
   every: number
 }
-export interface StackKey {
-  key: Key,
-  min: number
-}
 export abstract class KeyScreen {
-  static getFirstHotkeyPosition(): { f1: StartPosition } {
+  static getFirstHotkeyPosition(): { f1: FullPosition } {
     const { x, y } = Screen.getInstance().getHiggsPosition()
     return {
       f1: {

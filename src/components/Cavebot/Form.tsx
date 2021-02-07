@@ -7,7 +7,7 @@ import { TransitButton } from '../base/TransitButton'
 import { ICavebotChildren } from './ICavebotChildren'
 
 export const FormCavebot: React.FC<ICavebotChildren> = ({
-  config, setConfig
+  cavebot: config, setConfig
 }) => {
   const createNewActionAlpha = () =>
     setConfig({
@@ -30,13 +30,10 @@ export const FormCavebot: React.FC<ICavebotChildren> = ({
   return (
     <>
       <div
-        className={
-          `${ '' } bg-gray-800 rounded p-0.5 m-1 text-white`
-        }
+        className="rounded p-0.5 m-1 text-white"
       >
         <div
-          className="flex flex-col rounded border border-black p-2 m-1 text-center overflow-y-scroll max-h-72"
-        >
+          className="flex flex-col rounded border border-black text-center overflow-y-scroll max-h-72">
           <label className="mx-auto inline-flex items-center border-b border-white w-full text-center">
             <span className="mx-auto">Caminho</span>
           </label>

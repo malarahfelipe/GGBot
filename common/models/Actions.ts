@@ -24,5 +24,5 @@ export interface Action<T = any, K extends AvailableAction = 'Andar'> {
   name: K
   value?: T,
   completed?: boolean
-  handler: ACTION
+  handler?: ACTION
 }

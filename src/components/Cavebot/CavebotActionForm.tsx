@@ -50,8 +50,7 @@ export const useCavebotActions = ([ oldActions, setActions ]: IUseCavebot): IUsi
     RendererAction<any, 'Refilar mana'>
   ] = [
     {
-      name: 'Andar',
-      handler: CAVEBOT_ACTIONS.startCavebot
+      name: 'Andar'
     },
     {
       name: 'Checar supply',

@@ -1,13 +1,12 @@
 import { CAVEBOT_ACTIONS } from '../../common/models/CavebotActions.enum'
 import { BaseStore } from './Base.store'
-import { isRejected, isFullfilled } from '../../common/utils/promise'
-import { CAVEBOT_CONFIG_ACTIONS } from '../../common/models/CavebotConfigActions.enum'
 import { CavebotConfig } from '../../common/models/CavebotConfig'
+import { ConfigStore } from './Config'
+import { AGENT_ACTIONS } from '../../common/models/Agent.dynamic-enum'
 
 export class CavebotStore extends BaseStore {
   private static instance: CavebotStore
   private config: CavebotConfig
-  private configs: Array<CavebotConfig>
 
   private constructor() {
     super('CavebotStore')
@@ -19,16 +18,17 @@ export class CavebotStore extends BaseStore {
   }
 
   async initialize(): Promise<CavebotStore> {
-    await this.load()
+    const { cavebot } = (await ConfigStore.getInstance()).getConfig()
+    this.config = cavebot
     return this
   }
 
-  startCavebot(): Promise<void> {
-    return this.invoke(CAVEBOT_ACTIONS.startCavebot)
+  start(): Promise<void> {
+    return this.invoke(AGENT_ACTIONS('cavebot').start)
   }
 
-  stopCavebot(): Promise<void> {
-    return this.invoke(CAVEBOT_ACTIONS.stopCavebot)
+  stop(): Promise<void> {
+    return this.invoke(AGENT_ACTIONS('cavebot').stop)
   }
 
   checkSupply(): Promise<void> {
@@ -37,35 +37,5 @@ export class CavebotStore extends BaseStore {
 
   refillMana(): Promise<void> {
     return this.invoke(CAVEBOT_ACTIONS.refillMana)
-  }
-
-  async load(): Promise<void> {
-    const promises = await Promise.allSettled(
-      [
-        this.loadConfigs()
-      ]
-    )
-    const [ reasons, configs ] = [
-      promises
-        .filter(isRejected)
-        .map(({ reason }) => reason),
-      promises
-        .filter(isFullfilled)
-        .map<CavebotConfig[]>(({ value }) => value)
-    ]
-    console.log('reasons', reasons)
-    this.configs = configs[0]
-  }
-
-  private async loadConfigs(): Promise<CavebotConfig[]> {
-    return this.invoke(CAVEBOT_CONFIG_ACTIONS.get)
-  }
-
-  getConfigs(): Array<CavebotConfig> {
-    return this.configs
-  }
-
-  setConfig(config: CavebotConfig): Promise<CavebotConfig> {
-    return this.invoke(CAVEBOT_CONFIG_ACTIONS.set, config)
   }
 }

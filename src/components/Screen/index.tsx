@@ -1,11 +1,11 @@
 import React from 'react'
 import { TransitButton } from '../base/TransitButton'
-import { Text } from '../Cavebot/styles'
+import { Text } from '../base/styles'
 import { Counter } from '../base/Counter'
 import { ScreenStore } from '../../store/Screen'
 
 export interface IScreen {
-  setStarted: React.Dispatch<React.SetStateAction<boolean>>
+  setStarted: (value: boolean) => Promise<void>
 }
 const Screen: React.FC<IScreen> = ({ setStarted }) => {
   // const [ whichAlpha, setWhichAlpha ] = useState(null)
@@ -28,7 +28,7 @@ const Screen: React.FC<IScreen> = ({ setStarted }) => {
       </div>
       <div className="flex flex-col m-auto space-y-3">
         <p>Atenção, para iniciar o bot esteja com seu char logado.</p>
-        <p>Quando clicar abaixo em <span className="font-bold">INICIAR</span>, abra a tela do jogo em até 3 segundos e depois volte aqui ;)</p>
+        <p>Antes de clicar abaixo em <span className="font-bold">INICIAR</span>, esteja com seu char logado na tela de fundo ;)</p>
         <TransitButton
           color={ { bg: 'green-500', text: 'white' } }
           onClick={onStart}

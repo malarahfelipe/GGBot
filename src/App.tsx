@@ -4,8 +4,12 @@ import Grid from './components/base/Grid'
 import './styles/tailwind.css'
 import Screen from './components/Screen'
 import Cavebot from './components/Cavebot'
-import { Container } from './components/Cavebot/styles'
+import Healer from './components/Healer'
+import Attacker from './components/Attacker'
+import { Container } from './components/base/styles'
+import { Config } from '../common/models/Config'
 import { GlobalStyle } from './styles/GlobalStyle'
+import { ConfigStore } from './store/Config'
 
 const mainElement = document.createElement('div')
 mainElement.setAttribute('id', 'root')
@@ -18,28 +22,47 @@ document.body.appendChild(mainElement)
 const App = () => {
   const [ started, setStarted ] = useState(false)
   const notStartedClasses = 'blur-md cursor-not-allowed pointer-events-none'
+  const [ config, setConfig ] = useState(new Config())
+
+  const onSetStarted = async (value: boolean) => {
+    const instance = await ConfigStore.getInstance()
+    const config = instance.getConfig()
+    console.log('config', config)
+    setConfig(config)
+    setStarted(value)
+  }
+
+  const onSetConfig = async (newConfig: Config) => {
+    setConfig(newConfig)
+    const instance = await ConfigStore.getInstance()
+    await instance.setConfig(newConfig)
+  }
+
   return <>
     <GlobalStyle />
-    <Grid className="grid-cols-12">
-      <Container className={`${ !started ? `${ notStartedClasses } col-span-2` : 'col-span-3' } space-y-4`}>
-        <Cavebot />
-      </Container>
-      <Container className={`${ !started ? `${ notStartedClasses } col-span-2` : 'col-span-3' } space-y-4`}>
-        <Cavebot />
-      </Container>
-      {
-        !started &&
-        <Container className="col-span-4 space-y-2">
-          <Screen setStarted={setStarted} />
-        </Container>
-      }
-      <Container className={`${ !started ? `${ notStartedClasses } col-span-2` : 'col-span-3' } space-y-4`}>
-        <Cavebot />
-      </Container>
-      <Container className={`${ !started ? `${ notStartedClasses } col-span-2` : 'col-span-3' } space-y-4`}>
-        <Cavebot />
-      </Container>
-    </Grid>
+    {
+      config &&
+      <Grid className="grid-cols-5">
+        {
+          (started &&
+            <>
+              <Container className="col-start-3 space-y-4">
+                <Healer config={config} setConfig={onSetConfig}/>
+              </Container>
+              <Container className="space-y-4">
+                <Attacker config={config} setConfig={onSetConfig}/>
+              </Container>
+              <Container className="space-y-4">
+                <Cavebot config={config} setConfig={onSetConfig}/>
+              </Container>
+            </>
+          ) ||
+          <Container className="col-span-5 space-y-2 text-center">
+            <Screen setStarted={onSetStarted} />
+          </Container>
+        }
+      </Grid>
+    }
   </>
 }
 
