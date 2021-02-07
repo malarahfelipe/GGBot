@@ -8,7 +8,7 @@ export class Healer {
   private static readonly BAR_SIZE_PX = 91
   private static instance: Healer
   private config: HealerConfig
-  private healersInterval: number[]
+  private healersInterval: number[] = []
   private constructor() { }
 
   static async getInstance(): Promise<Healer> {

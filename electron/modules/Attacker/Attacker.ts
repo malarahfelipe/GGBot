@@ -8,7 +8,7 @@ import { BehaviorSubject } from 'rxjs'
 export class Attacker {
   private static instance: Attacker
   private config: AttackerConfig
-  private attackersInterval: number[]
+  private attackersInterval: number[] = []
   private onMonsterAvailable: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
   private constructor() { }
 
