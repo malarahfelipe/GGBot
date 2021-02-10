@@ -4,9 +4,11 @@ import { ConfigModule } from '../Config/Config'
 import { AttackerConfig, AttackConfig } from '../../../common/models/AttackerConfig'
 import { keyTap, getPixelColor } from 'robotjs'
 import { BehaviorSubject } from 'rxjs'
+import { KeyScreen } from '../Key/Key'
 
 export class Attacker {
   private static instance: Attacker
+  private keyScreenInstance: KeyScreen
   private config: AttackerConfig
   private attackersInterval: number[] = []
   private onMonsterAvailable: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
@@ -46,16 +48,17 @@ export class Attacker {
       keyTap('space')
     this.onMonsterAvailable.next(hasMonster)
     return this.config.configs.forEach(({ monsterAmount, key }, index) => {
+      const defaultInterval = 1000
       this.attackersInterval[index] = setInterval(() => {
         if (Attacker.hasMoreThanxMonsters(monsterAmount))
-          keyTap(key)
-      }, 500)
+          this.keyScreenInstance.keyPress(key)
+      }, defaultInterval)
     })
   }
 
   public start(): void {
     if (!this.config) return
-
+    this.keyScreenInstance = KeyScreen.getInstance()
     this.stop()
     this.checkAndAttack()
   }
@@ -92,7 +95,7 @@ export class Attacker {
   public static getMonsterInfo(): BarInfo {
     return {
       filledColor: '000000',
-      emptyColor: '494A4A'
+      emptyColor: '494a4a'
     }
   }
 }

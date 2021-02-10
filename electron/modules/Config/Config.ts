@@ -72,22 +72,31 @@ export class ConfigModule {
         healer: {
           configs: [
             {
-              type: 'mana',
-              percentage: 85,
-              key: 'f3',
-              every: 500
-            },
-            {
               type: 'life',
               percentage: 85,
-              key: 'f1',
-              every: 350
+              key: {
+                key: 'f1',
+                type: 'spell'
+              },
+              every: 300
             },
             {
               type: 'life',
               percentage: 70,
-              key: 'f2',
-              every: 500
+              key: {
+                key: 'f2',
+                type: 'rune_potion'
+              },
+              every: 300
+            },
+            {
+              type: 'mana',
+              percentage: 85,
+              key: {
+                key: 'f3',
+                type: 'rune_potion'
+              },
+              every: 300
             }
           ]
         },
@@ -95,15 +104,24 @@ export class ConfigModule {
           configs: [
             {
               monsterAmount: 1,
-              key: 'f4'
+              key: {
+                key: 'f4',
+                type: 'spell'
+              }
             },
             {
               monsterAmount: 2,
-              key: 'f5'
+              key: {
+                key: 'f5',
+                type: 'spell'
+              }
             },
             {
               monsterAmount: 4,
-              key: 'f6'
+              key: {
+                key: 'f6',
+                type: 'spell'
+              }
             }
           ]
         }

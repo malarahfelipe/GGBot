@@ -4,6 +4,7 @@
   "description": "An Electron boilerplate including TypeScript, React, Jest and ESLint.",
   "main": "./dist/main.js",
   "scripts": {
+    "mock": "ts-node ./tests/index.ts",
     "dev": "npm-run-all -p webpack:react electron:serve",
     "webpack:electron": "cross-env NODE_ENV=development webpack --config webpack/electron.webpack.js --mode development",
     "webpack:react": "cross-env NODE_ENV=development webpack-dev-server --config webpack/react.webpack.js --mode development",
@@ -105,7 +106,8 @@
     "robotjs": "^0.6.0",
     "rxjs": "^6.6.3",
     "styled-components": "^5.1.1",
-    "tailwindcss": "^2.0.2"
+    "tailwindcss": "^2.0.2",
+    "ts-node": "^9.1.1"
   },
   "build": {
     "appId": "your.id",

@@ -29,6 +29,15 @@ module.exports = {
   node: {
     __dirname: false
   },
+  devServer: {
+    contentBase: path.join(rootPath, 'dist/main'),
+    historyApiFallback: true,
+    compress: true,
+    hot: true,
+    host: '0.0.0.0',
+    port: 4999,
+    publicPath: '/'
+  },
   output: {
     path: path.resolve(rootPath, 'dist'),
     filename: '[name].js'

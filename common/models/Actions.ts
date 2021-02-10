@@ -1,5 +1,5 @@
 import { ACTIONS } from './Actions.enum'
-import { Key } from './Key'
+import { FKey } from './Key'
 
 export type ACTION = typeof ACTIONS[keyof typeof ACTIONS]
 
@@ -7,7 +7,7 @@ export type AvailableAction = 'Andar' | 'Checar supply' | 'Refilar mana'
 
 export type ChecarSupplyValue = {
   minCap: number
-  keys: Array<{ key: Key, value: number }>
+  keys: Array<{ key: FKey, value: number }>
 }
 export type RefilarManaValue = {
   mana: number

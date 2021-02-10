@@ -3,9 +3,12 @@ import { Screen } from '../Screen/Screen'
 import { ConfigModule } from '../Config/Config'
 import { HealerConfig } from '../../../common/models/HealerConfig'
 import { keyTap, getPixelColor } from 'robotjs'
-
+import { KeyScreen } from '../Key/Key'
+import { throttle, memoize } from 'lodash'
+import { Key } from '../../../common/models/Key'
 export class Healer {
   private static readonly BAR_SIZE_PX = 91
+  private keyScreenInstance: KeyScreen
   private static instance: Healer
   private config: HealerConfig
   private healersInterval: number[] = []
@@ -31,7 +34,8 @@ export class Healer {
   private static isBelow(percentage = 0, barInfo: BarInfo, startInfo: FullPosition) {
     const { startsAt: { x, y } } = startInfo
     const { filledColor } = barInfo
-    const currentColor = getPixelColor(x + this.getPixelsFromPercentage(percentage), y)
+    const xPosition = Math.floor(x + this.getPixelsFromPercentage(percentage))
+    const currentColor = getPixelColor(xPosition, y)
     return filledColor !== currentColor
   }
 
@@ -44,22 +48,23 @@ export class Healer {
   }
 
   private checkAndRestore() {
-    return this.config.configs.forEach(({ every, percentage, key, type }, index) => {
+    this.config.configs.forEach(({ every, percentage, key, type }, index) => {
       this.healersInterval[index] = setInterval(() => {
         if (
           (type === 'mana' && Healer.isManaBelow(percentage)) ||
           (type === 'life' && Healer.isLifeBelow(percentage))
         )
-          keyTap(key)
+          this.keyScreenInstance.keyPress(key)
       }, every)
     })
   }
 
   public start(): void {
     if (!this.config) return
-
+    this.keyScreenInstance = KeyScreen.getInstance()
     this.stop()
     this.checkAndRestore()
+    setTimeout(() => this.stop(), 10000)
   }
 
   public stop(): void {
@@ -89,14 +94,14 @@ export class Healer {
 
   public static getLifeInfo(): BarInfo {
     return {
-      filledColor: 'DB4F4F',
+      filledColor: 'db4f4f',
       emptyColor: ''
     }
   }
 
   public static getManaInfo(): BarInfo {
     return {
-      filledColor: '5350DA',
+      filledColor: '5350da',
       emptyColor: ''
     }
   }

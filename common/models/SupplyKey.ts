@@ -1,6 +1,6 @@
-import { Key } from './Key'
+import { FKey } from './Key'
 
 export interface SupplyKey {
-  key: Key
+  key: FKey
   min: number
 }

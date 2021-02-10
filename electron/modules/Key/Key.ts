@@ -1,7 +1,8 @@
-import { getPixelColor, screen } from 'robotjs'
+import { getPixelColor, screen, setKeyboardDelay, keyTap } from 'robotjs'
 import { readTextInImage, writeImage, imgDir } from '../../models/Image'
 import { Position, Utils, FullPosition } from '../../../common/models/Utils'
-import { Key } from '../../../common/models/Key'
+import { Key, FKey } from '../../../common/models/Key'
+import { throttle } from 'lodash'
 import { Screen } from '../Screen/Screen'
 
 export interface SupportKey {
@@ -10,7 +11,25 @@ export interface SupportKey {
   // in ms
   every: number
 }
-export abstract class KeyScreen {
+export class KeyScreen {
+  private static instance: KeyScreen
+  private lastKeyPressed: Key
+
+  private constructor() { }
+
+  public static getInstance(): KeyScreen {
+    if (!this.instance) this.instance = new KeyScreen()
+    return this.instance
+  }
+
+  private keyPresser = throttle(({ key }: Key) => keyTap(key), 1500)
+
+  public keyPress(key: Key): void {
+    const exhaust = 1250
+    this.lastKeyPressed = key
+    this.keyPresser(key)
+  }
+
   static getFirstHotkeyPosition(): { f1: FullPosition } {
     const { x, y } = Screen.getInstance().getHiggsPosition()
     return {
@@ -23,7 +42,7 @@ export abstract class KeyScreen {
     }
   }
 
-  static getPositionFromKey(key: Key = 'f1'): Position {
+  static getPositionFromKey(key: FKey = 'f1'): Position {
     const { f1: { startsAt: { x, y } } } = this.getFirstHotkeyPosition()
     return {
       y: y,
@@ -31,7 +50,7 @@ export abstract class KeyScreen {
     }
   }
 
-  static async getKeyStackAmount(key: Key = 'f1'): Promise<number> {
+  static async getKeyStackAmount(key: FKey = 'f1'): Promise<number> {
     const { x, y } = this.getPositionFromKey(key)
     const { hotkeyPixelsSize } = Utils.getHotkeyInfo()
     const height = 8
@@ -51,7 +70,7 @@ export abstract class KeyScreen {
     return getPixelColor(x, y)
   }
 
-  static isKeyStackEmpty(key: Key = 'f1'): boolean {
+  static isKeyStackEmpty(key: FKey = 'f1'): boolean {
     return this.getPixelColorFromPosition(
       this.getPositionFromKey(key)
     ) === Utils.getStackInfo().emptyColor
