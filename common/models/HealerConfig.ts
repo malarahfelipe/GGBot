@@ -1,7 +1,6 @@
 import { Key } from './Key'
 
 export type HealCommonConfig = {
-  every: number
   percentage: number
   key: Key
   type: 'mana' | 'life'
@@ -15,7 +14,10 @@ export type HealManaConfig = HealCommonConfig & {
   type: 'mana'
 }
 
-export type HealConfig = HealManaConfig | HealLifeConfig
+export type HealConfig = (HealManaConfig | HealLifeConfig) & {
+  every: number
+  priority: number
+}
 
 export interface HealerConfig {
   configs: HealConfig[]

@@ -5,3 +5,7 @@ export type Key = {
   key: FKey
   type: 'spell' | 'rune_potion'
 }
+
+export type KeyStatus = Key & {
+  priority: number
+}

@@ -78,16 +78,28 @@ export class ConfigModule {
                 key: 'f1',
                 type: 'spell'
               },
-              every: 300
+              priority: 2,
+              every: 400
             },
             {
               type: 'life',
-              percentage: 70,
+              percentage: 30,
+              key: {
+                key: 'f10',
+                type: 'spell'
+              },
+              priority: 3,
+              every: 500
+            },
+            {
+              type: 'life',
+              percentage: 60,
               key: {
                 key: 'f2',
                 type: 'rune_potion'
               },
-              every: 300
+              priority: 5,
+              every: 200
             },
             {
               type: 'mana',
@@ -96,7 +108,8 @@ export class ConfigModule {
                 key: 'f3',
                 type: 'rune_potion'
               },
-              every: 300
+              priority: 4,
+              every: 600
             }
           ]
         },
@@ -104,6 +117,7 @@ export class ConfigModule {
           configs: [
             {
               monsterAmount: 1,
+              priority: 2,
               key: {
                 key: 'f4',
                 type: 'spell'
@@ -111,6 +125,7 @@ export class ConfigModule {
             },
             {
               monsterAmount: 2,
+              priority: 3,
               key: {
                 key: 'f5',
                 type: 'spell'
@@ -118,6 +133,7 @@ export class ConfigModule {
             },
             {
               monsterAmount: 4,
+              priority: 4,
               key: {
                 key: 'f6',
                 type: 'spell'

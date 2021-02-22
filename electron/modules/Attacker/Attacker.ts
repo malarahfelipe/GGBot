@@ -6,6 +6,7 @@ import { keyTap, getPixelColor } from 'robotjs'
 import { BehaviorSubject } from 'rxjs'
 import { KeyScreen } from '../Key/Key'
 
+const MAX_COUNT_MONSTERS = 8
 export class Attacker {
   private static instance: Attacker
   private keyScreenInstance: KeyScreen
@@ -27,31 +28,16 @@ export class Attacker {
     return this
   }
 
-  public static hasMoreThanxMonsters(quantity = 0): boolean {
-    if (quantity < 1) return false
-
-    const { startsAt: { x, y } } = this.getMonsterPosition()
-    const { filledColor } = this.getMonsterInfo()
-    const monsterDistance = this.getMonstersBatteDistance()
-    const monsterAt = { x, y: y + (monsterDistance * quantity) }
-    const currentColor = getPixelColor(monsterAt.x, monsterAt.y)
-    return filledColor !== currentColor
-  }
-
   public getOnMonsterAvailable(): BehaviorSubject<boolean> {
     return this.onMonsterAvailable
   }
 
   private checkAndAttack() {
-    const hasMonster = Attacker.hasMoreThanxMonsters(1)
-    if (hasMonster)
-      keyTap('space')
-    this.onMonsterAvailable.next(hasMonster)
-    return this.config.configs.forEach(({ monsterAmount, key }, index) => {
+    return this.config.configs.forEach(({ monsterAmount, priority, key }, index) => {
       const defaultInterval = 1000
       this.attackersInterval[index] = setInterval(() => {
-        if (Attacker.hasMoreThanxMonsters(monsterAmount))
-          this.keyScreenInstance.keyPress(key)
+        if (Attacker.hasMonsters(monsterAmount))
+          this.keyScreenInstance.addToQueue({ ...key, priority })
       }, defaultInterval)
     })
   }
@@ -60,7 +46,16 @@ export class Attacker {
     if (!this.config) return
     this.keyScreenInstance = KeyScreen.getInstance()
     this.stop()
-    this.checkAndAttack()
+    // this.checkAndAttack()
+    this.attackersInterval.push(
+      setInterval(() => {
+        const hasMonster = Attacker.hasMonsters()
+        if (hasMonster && !Attacker.isAttacking())
+          keyTap('space')
+        this.onMonsterAvailable.next(hasMonster)
+      }, 150)
+    )
+    setTimeout(() => this.stop(), 5000)
   }
 
   public stop(): void {
@@ -68,14 +63,26 @@ export class Attacker {
       this.attackersInterval.forEach(clearInterval)
   }
 
-  static getLifePosition(): FullPosition {
-    const { x, y } = Screen.getInstance().getHiggsPosition()
-    return {
-      startsAt: {
-        x: x + 1139,
-        y: y + 285
-      }
-    }
+  public static isAttacking(): boolean {
+    const { startsAt: { x, y } } = this.getMonsterPosition()
+    const { attackingColor } = this.getMonsterInfo()
+    const monsterDistance = this.getMonstersBatteDistance()
+    return new Array(MAX_COUNT_MONSTERS)
+      .fill(null)
+      .some((_, index) =>
+        attackingColor === getPixelColor(x - 3, y + (monsterDistance * index))
+      )
+  }
+
+  public static hasMonsters(minQuantity = 0): boolean {
+    if (minQuantity < 0) return false
+
+    const { startsAt: { x, y } } = this.getMonsterPosition()
+    const { filledColor } = this.getMonsterInfo()
+    const monsterDistance = this.getMonstersBatteDistance()
+    const monsterAt = { x, y: y + (monsterDistance * minQuantity) }
+    const currentColor = getPixelColor(monsterAt.x, monsterAt.y)
+    return filledColor === currentColor
   }
 
   static getMonstersBatteDistance(): number {
@@ -86,14 +93,15 @@ export class Attacker {
     const { x, y } = Screen.getInstance().getHiggsPosition()
     return {
       startsAt: {
-        x: x + 1099,
+        x: x + 968,
         y: y + 30
       }
     }
   }
 
-  public static getMonsterInfo(): BarInfo {
+  public static getMonsterInfo(): BarInfo & { attackingColor: string } {
     return {
+      attackingColor: 'ff0000',
       filledColor: '000000',
       emptyColor: '494a4a'
     }

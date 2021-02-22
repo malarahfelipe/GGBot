@@ -1,7 +1,7 @@
 import { FullPosition, BarInfo } from '../../../common/models/Utils'
 import { Screen } from '../Screen/Screen'
 import { ConfigModule } from '../Config/Config'
-import { HealerConfig } from '../../../common/models/HealerConfig'
+import { HealerConfig, HealConfig, HealCommonConfig } from '../../../common/models/HealerConfig'
 import { keyTap, getPixelColor } from 'robotjs'
 import { KeyScreen } from '../Key/Key'
 import { throttle, memoize } from 'lodash'
@@ -47,15 +47,17 @@ export class Healer {
     return this.isBelow(percentage, this.getManaInfo(), this.getManaPosition())
   }
 
+  checkIfBelow = throttle(({ type, percentage, key, priority }: HealConfig) => {
+    if (
+      (type === 'mana' && Healer.isManaBelow(percentage)) ||
+      (type === 'life' && Healer.isLifeBelow(percentage))
+    )
+      this.keyScreenInstance.addToQueue({ ...key, priority })
+  }, 150)
+
   private checkAndRestore() {
-    this.config.configs.forEach(({ every, percentage, key, type }, index) => {
-      this.healersInterval[index] = setInterval(() => {
-        if (
-          (type === 'mana' && Healer.isManaBelow(percentage)) ||
-          (type === 'life' && Healer.isLifeBelow(percentage))
-        )
-          this.keyScreenInstance.keyPress(key)
-      }, every)
+    this.config.configs.forEach((keyConfig, index) => {
+      this.healersInterval[index] = setInterval(() => this.checkIfBelow(keyConfig), keyConfig.every)
     })
   }
 
@@ -64,7 +66,6 @@ export class Healer {
     this.keyScreenInstance = KeyScreen.getInstance()
     this.stop()
     this.checkAndRestore()
-    setTimeout(() => this.stop(), 10000)
   }
 
   public stop(): void {

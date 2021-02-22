@@ -1,33 +1,50 @@
-import { getPixelColor, screen, setKeyboardDelay, keyTap } from 'robotjs'
+import { getPixelColor, screen, setKeyboardDelay, keyTap, moveMouse, mouseClick } from 'robotjs'
 import { readTextInImage, writeImage, imgDir } from '../../models/Image'
 import { Position, Utils, FullPosition } from '../../../common/models/Utils'
-import { Key, FKey } from '../../../common/models/Key'
+import { Key, FKey, KeyStatus } from '../../../common/models/Key'
 import { throttle } from 'lodash'
 import { Screen } from '../Screen/Screen'
 
+export type KeyPressingStatus = KeyStatus & {
+  done?: boolean
+}
 export interface SupportKey {
   check: () => boolean,
   action: () => void,
   // in ms
   every: number
 }
+
+const MAX_KEYS_IN_QUEUE = 8
 export class KeyScreen {
   private static instance: KeyScreen
   private lastKeyPressed: Key
+  private queue: KeyPressingStatus[] = []
 
-  private constructor() { }
+  private constructor() {
+    setInterval(() => {
+      if (this.queue.length >= MAX_KEYS_IN_QUEUE)
+        this.queue.splice(0, MAX_KEYS_IN_QUEUE)
+    }, 3000)
+    setInterval(() => this.queue.slice(0, MAX_KEYS_IN_QUEUE).forEach(this.keyToucher), 150)
+  }
 
   public static getInstance(): KeyScreen {
     if (!this.instance) this.instance = new KeyScreen()
     return this.instance
   }
 
-  private keyPresser = throttle(({ key }: Key) => keyTap(key), 1500)
+  private keyPresser = throttle(({ key }: Key) => keyTap(key), 550)
 
-  public keyPress(key: Key): void {
-    const exhaust = 1250
-    this.lastKeyPressed = key
-    this.keyPresser(key)
+  private keyToucher = throttle(({ key }: Key) => {
+    const { x, y } = KeyScreen.getPositionFromKey(key)
+    moveMouse(x, y)
+    mouseClick()
+    this.queue.shift()
+  }, 250)
+
+  addToQueue(key: KeyStatus): void {
+    this.queue = [ ...this.queue ].concat(key).sort((a, b) => b.priority - a.priority)
   }
 
   static getFirstHotkeyPosition(): { f1: FullPosition } {
